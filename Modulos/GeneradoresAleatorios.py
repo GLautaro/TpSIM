@@ -10,10 +10,10 @@ def ListaAleatoriaCongruenciaLineal(n):
 
 def ListaAleatoriaCongruenciaMultiplicativa(n):
     k=2
-    x = 17
+    x = 17 #Semilla
     g = np.log2(n)+2
-    a = 3 + 8*k
-    m = 2**g
+    a = 3 + 8*k #Constante Multiplicativa
+    m = 2**g #Módulo
     result = []
     for i in range(n):
         z = a*x
