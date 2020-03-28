@@ -28,5 +28,11 @@ def ListaAleatoriaCongruencialMultiplicativo(n):
         
     return numeros_generados
 
-
+def ListaNumerosAleatorios(n, opcion_seleccionada):
+        if opcion_seleccionada == 0:
+            return ListaAleatoriaCongruencialLineal(n)
+        elif opcion_seleccionada == 1:
+            return ListaAleatoriaCongruencialMultiplicativo(n)
+        elif opcion_seleccionada == 2:
+            return ListaAleatoriaNativa(n)
 
