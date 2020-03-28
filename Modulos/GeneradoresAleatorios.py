@@ -5,23 +5,28 @@ def ListaAleatoriaNativa(n):
     numbers_array = list(map(lambda x: round(x, 4), [random() for i in range(n)]))
     return numbers_array
 
-def ListaAleatoriaCongruenciaLineal(n):
+
+
+def ListaAleatoriaCongruencialLineal(n):
     pass
 
-def ListaAleatoriaCongruenciaMultiplicativa(n):
+'''La función implementa el método Congruencial Multiplicativo
+    Parametros: n : int Periodo máximo 
+    Retorna list : Lista con los números generados
+'''
+def ListaAleatoriaCongruencialMultiplicativo(n):
     k=2
     x = 17 #Semilla
-    g = np.log2(n)+2
     a = 3 + 8*k #Constante Multiplicativa
-    m = 2**g #Módulo
-    result = []
+    m = 2**(np.log2(n)+2) #Módulo -- La variable g se obtiene apartir del periodo máximo ingresado
+    numeros_generados = []
+
     for i in range(n):
-        z = a*x
-        x = (z%m)
+        x = ((a*x)%m)
         y = x/(m-1)
-        result.append(round(y, 4))
+        numeros_generados.append(round(y, 4))
         
-    return result
+    return numeros_generados
 
 
 

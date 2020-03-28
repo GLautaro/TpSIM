@@ -7,3 +7,4 @@ class Intervalos(Enum):
     DIEZ = 10
     QUINCE = 15
     VEINTE = 20
+

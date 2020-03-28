@@ -13,19 +13,19 @@ def main():
     array_length = st.number_input('Ingrese la cantidad de numeros que desea generar', min_value = 0, value=10, format='%d')
   
     
-    options = ['Congruencial Lineal', 'Congruencial Multiplicativa', 'Función Nativa']
+    opciones = ['Congruencial Lineal', 'Congruencial Multiplicativo', 'Función Nativa']
 
-    option_selected = st.selectbox(
+    opcion_seleccionada = st.selectbox(
     'Elegir Método:',
-     list(range(len(options))), format_func= lambda x: options[x] )  
+     list(range(len(opciones))), format_func= lambda x: opciones[x] )  
     gen_ok = st.button('Generar numeros')
     
     if gen_ok:  
-        if option_selected == 0:
-            st.write(generador.ListaAleatoriaCongruenciaLineal(array_length))
-        elif option_selected == 1:
-            st.write(generador.ListaAleatoriaCongruenciaMultiplicativa(array_length))
-        elif option_selected == 2:
+        if opcion_seleccionada == 0:
+            st.write(generador.ListaAleatoriaCongruencialLineal(array_length))
+        elif opcion_seleccionada == 1:
+            st.write(generador.ListaAleatoriaCongruencialMultiplicativo(array_length))
+        elif opcion_seleccionada == 2:
             st.write(generador.ListaAleatoriaNativa(array_length))
 
 
