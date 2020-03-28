@@ -1,5 +1,6 @@
 #Importacion del modulos propios
 import Modulos.numbers as utils
+import Modulos.GeneradoresAleatorios as generador
 
 #Importacion de modulos de terceros
 import streamlit as st
