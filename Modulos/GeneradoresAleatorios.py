@@ -19,7 +19,7 @@ def ListaAleatoriaCongruenciaMultiplicativa(n):
         z = a*x
         x = (z%m)
         y = x/(m-1)
-        result.append(y)
+        result.append(round(y, 4))
         
     return result
 
