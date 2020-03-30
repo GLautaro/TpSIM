@@ -8,3 +8,6 @@ class Intervalos(Enum):
     QUINCE = 15
     VEINTE = 20
 
+class ResultadosChi2(Enum):
+    H0_RECHAZADA = 0
+    H0_NO_RECHAZABLE = 1
