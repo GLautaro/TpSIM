@@ -1,6 +1,13 @@
 from scipy.stats import chi2
 from Modulos.Constantes import ResultadosChi2
 
+def EstadisticoChi2(frec_obs, frec_esp):
+    ''' 
+    La funcion devuelve el valor del estadistico Chi^2 para los valores de frecuencia esperada y observada
+    Parametros: frec_obs : int Frecuencia observada para un intervalo
+                frec_esp : int Frecuencia esperada para un intervalo
+    '''
+    return ((frec_obs - frec_esp) ** 2) / frec_esp
 
 def EstadisticoChi2Acumulado(frec_obs, frec_esp=None,):
     '''
