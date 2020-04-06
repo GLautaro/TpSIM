@@ -1,6 +1,8 @@
 import random
 import numpy as np
 from math import trunc
+
+
 def Truncate(n, decimals=0):
     multiplier = 10 ** decimals
     return int(n * multiplier) / multiplier
@@ -32,10 +34,10 @@ def ListaAleatoriaCongruencialMultiplicativo(n,x,a,m):
 
     return numeros_generados
 
-def ListaNumerosAleatorios(opcion_seleccionada, n, x,a ,m, c):
+def ListaNumerosAleatorios(opcion_seleccionada, n, x, a, m, c):
         if opcion_seleccionada == 0:
             return ListaAleatoriaCongruencialLineal(n,x,a,m,c)
         elif opcion_seleccionada == 1:
             return ListaAleatoriaCongruencialMultiplicativo(n,x,a,m)
         elif opcion_seleccionada == 2:
-            return ListaAleatoriaNativa(n)
+            return ListaAleatoriaNativa(n, x)

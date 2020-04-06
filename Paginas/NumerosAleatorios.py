@@ -2,6 +2,7 @@
 import Modulos.GeneradoresAleatorios as generador
 import Modulos.Constantes as constantes
 import Modulos.GeneradorHistograma as histograma
+import Modulos.PruebaChiCuadrado as chiCuadrado
 
 # Importacion de modulos de terceros
 import streamlit as st
@@ -21,13 +22,15 @@ def LoadPage():
         'Elegir Método:',
         list(range(len(opciones))), format_func=lambda x: opciones[x])
 
-    if opcion_seleccionada != 2:
-        semilla = st.sidebar.number_input(
+    semilla = st.sidebar.number_input(
             'Semilla (X0):', min_value=0, value=0, format='%d')
-        #TODO: CAMBIAR POR K
+            
+    if opcion_seleccionada != 2:
+        
+        # TODO: CAMBIAR POR K
         constante_multiplicativa = st.sidebar.number_input(
             'Constante multiplicativa (a):', min_value=0, value=0, format='%d')
-        #TODO: CAMBIAR POR G
+        # TODO: CAMBIAR POR G
         modulo = st.sidebar.number_input(
             'Módulo (m):', min_value=0, value=0, format='%d')
         constante_aditiva = 0
@@ -39,7 +42,11 @@ def LoadPage():
 
     st.sidebar.subheader('📊Opciones del histograma de frecuencias:')
     intervalos = st.sidebar.slider('Seleccione la cantidad de intervalos:',
-                           min_value=5, value=5, max_value=20, step=5)
+                                   min_value=5, value=5, max_value=20, step=5)
+
+    st.sidebar.subheader('📈Opciones de la prueba de Chi-Cuadrado:')
+    nivel_significancia = st.sidebar.number_input(
+        'Nivel de Significancia:', min_value=0.0, max_value=100.0)
 
     gen_ok = st.sidebar.button('Iniciar Simulación')
     if gen_ok:
