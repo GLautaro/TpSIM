@@ -1,5 +1,6 @@
 from scipy.stats import chi2
 from Modulos.Constantes import ResultadosChi2
+import pandas as pd
 
 def EstadisticoChi2(frec_obs, frec_esp):
     ''' 
@@ -30,7 +31,7 @@ def EstadisticoChi2Acumulado(frec_obs, frec_esp=None,):
         ci = EstadisticoChi2(frec_obs[i],frec_esp[i])
         chi2_acu += ci
         chi2_valores.append(round(ci,2))
-    return grados_libertad, round(chi2_acu,2), chi2_valores
+    return grados_libertad, round(chi2_acu, 2), chi2_valores, frec_esp
 
 def ContarFrecuencias(lista_valores, intervalos):
     ''' La funcion devuelve la cantidad de valores de la lista que se ajustan a cada intervalo
@@ -78,23 +79,46 @@ def PruebaChiCuadrado(lista_valores, cantidad_intervalos, nivel_significancia):
                 cantidad_intervalos int : Cantidad de intervalos que se utilizaran para clasificar los datos de prueba
                 nivel_significancia float : Define como la probabilidad de tomar la decisión de rechazar la hipótesis nula cuando ésta es verdadera
     Retorno: ResultadosChi2 : Constante que define el resultado de la prueba
-             chi2_inter Dict<str,float> : Diccionario que contiene el valor calculado de Chi^2 para cada intervalo
+             CrearDataframe() DataFrame : Tabla que permite la visualizacion de los datos calculados
              grados_libertad int : Grados de libertad calculados para la cantidad dada de intervalos
-             contador_intervalos Dict<str,int> : Diccionario con la frecuencia observada para cada intervalo
-             chi2_ac float : Valor acumulado del estadistico chi^2 utilizado para la decision respecto a la H0
-
     '''
     limites_intervalos = CrearLimitesIntervalos(cantidad_intervalos)
     intervalos = CrearIntervalos(limites_intervalos)
-    contador_intervalos = ContarFrecuencias(lista_valores,intervalos)  
-    grados_libertad, chi2_ac, chi2_lista = EstadisticoChi2Acumulado(list(contador_intervalos.values()))
+    contador_intervalos = ContarFrecuencias(lista_valores, intervalos)  
+    grados_libertad, chi2_ac, chi2_lista, frec_esp = EstadisticoChi2Acumulado(list(contador_intervalos.values()))
     valor_critico = chi2.ppf(1 - nivel_significancia, grados_libertad)
-    chi2_inter = {list(contador_intervalos.keys())[i]:chi2_lista[i] for i in range(len(contador_intervalos.keys()))}
+    chi2_inter = {list(contador_intervalos.keys())[i]: chi2_lista[i] for i in range(len(contador_intervalos.keys()))}
 
     if chi2_ac < valor_critico:
-        return ResultadosChi2.H0_NO_RECHAZABLE, chi2_inter, grados_libertad,contador_intervalos, chi2_ac
+        return ResultadosChi2.H0_NO_RECHAZABLE, CrearDataframe(chi2_inter, contador_intervalos, frec_esp, limites_intervalos), grados_libertad
     else:
-        return ResultadosChi2.H0_RECHAZADA, chi2_inter, grados_libertad,contador_intervalos, chi2_ac
+        return ResultadosChi2.H0_RECHAZADA, CrearDataframe(chi2_inter, contador_intervalos, frec_esp, limites_intervalos), grados_libertad
+
+def CrearDataframe(chi2_inter, contador_intervalos, frec_esp, limites_intervalos):
+    '''
+    La funcion crea y retorna un dataframe de pandas para permitir la visualizacion de los datos
+    '''
+    chi2_l_acumulada = [list(chi2_inter.values())[0]]
+
+    for i in range(1, len(list(chi2_inter.values()))):
+        n = chi2_l_acumulada[i - 1] + list(chi2_inter.values())[i]
+        chi2_l_acumulada.append(n)
+    
+    pandas_interval = []    
+    for i in range(len(limites_intervalos) - 1):
+        n = pd.Interval(limites_intervalos[i], limites_intervalos[i + 1], closed='left')
+        pandas_interval.append(n)
+
+    d = {"Intervalo": list(contador_intervalos.keys()),
+         "pandas.Interval": pandas_interval,
+         "Fo": list(contador_intervalos.values()),
+         "Fe": frec_esp,
+         "C": list(chi2_inter.values()),
+         "C(ac)": list(chi2_l_acumulada)
+    }
+
+    tabla = pd.DataFrame(d, columns=["pandas.Interval", "Intervalo", "Fo", "Fe", "C", "C(ac)"])
+    return tabla
 
 def testEstadisticoChi2Acumulado():
     '''
@@ -127,17 +151,15 @@ def testPruebaChi2():
     '''
     arr = [0.15,0.22,0.41,0.65,0.84,0.81,0.62,0.45,0.32,0.07,0.11,0.29,0.58,0.73,0.93,0.97,0.79,0.55,0.35,0.09,0.99,0.51,0.35,0.02,0.19,0.24,0.98,0.10,0.31,0.17]
     nivel_significancia = 0.5
-    cantidad_intervalos = 5
-    resultado,lista_chi2,grados_libertad,dict_intervalos,valor_chi2 = PruebaChiCuadrado(arr,cantidad_intervalos,nivel_significancia)
+    cantidad_intervalos = 20
+    resultado,df,grados_libertad = PruebaChiCuadrado(arr,cantidad_intervalos,nivel_significancia)
     if resultado == ResultadosChi2.H0_RECHAZADA:
         print("La funcion no se comporta de manera esperada")        
     else:
         print("La funcion se comporta correctamente")
         print(resultado)
-        print(lista_chi2)
+        print(df)
         print(grados_libertad)
-        print(dict_intervalos)
-        print(valor_chi2)
 
 if __name__ == "__main__":
     testEstadisticoChi2Acumulado()
