@@ -29,14 +29,17 @@ def GeneradorHistograma(df_lista_numeros, cantidad_intervalos):
         )
     ))
 
-    """ 
     fig.add_trace(go.Histogram(
-        x = df_lista_numeros['Número generado'],
-        y = frecuencia_esp,
-        name = 'Esperado',
+        x=df_lista_numeros['Número generado'],
+        name='Esperado',
         marker_color='#EB89B5',
-        opacity=0.75
-    )) """
+        opacity=0.75,
+        xbins=dict(
+            start=0.0,
+            end=1.0,
+            size= 1 / cantidad_intervalos
+        )
+    ))
 
     fig.update_layout(
         title_text='Histograma de frecuencias',  # title of plot
