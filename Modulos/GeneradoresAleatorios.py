@@ -1,8 +1,13 @@
-from random import random
+import random
 import numpy as np
+from math import trunc
+def Truncate(n, decimals=0):
+    multiplier = 10 ** decimals
+    return int(n * multiplier) / multiplier
 
-def ListaAleatoriaNativa(n):
-    numbers_array = list(map(lambda x: round(x, 4), [random() for i in range(n)]))
+def ListaAleatoriaNativa(n, s):
+    random.seed(s)
+    numbers_array = list(map(lambda x: Truncate(x, 4), [random.random() for i in range(n)]))
     return numbers_array
 
 def ListaAleatoriaCongruencialLineal(n,x,a,m,c):
@@ -10,7 +15,7 @@ def ListaAleatoriaCongruencialLineal(n,x,a,m,c):
     for i in range(n):
         x = (a*x + c)%m
         y = x/(m-1)
-        numeros_generados.append(round(y, 4))
+        numeros_generados.append(Truncate(y, 4))
     
     return numeros_generados
 
@@ -23,7 +28,7 @@ def ListaAleatoriaCongruencialMultiplicativo(n,x,a,m):
     for i in range(n):
         x = ((a*x)%m)
         y = x/(m-1)
-        numeros_generados.append(round(y, 4))
+        numeros_generados.append(Truncate(y, 4))
 
     return numeros_generados
 
