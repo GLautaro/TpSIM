@@ -10,51 +10,41 @@ cantidad_intervalos: cantidad de intervalos que se mostraran en el histograma
 Retorna: histograma: grafico de la libreria plotly
 '''
 
-def GeneradorHistograma(df_lista_numeros, cantidad_intervalos):
-
-    frecuencia_esp = GenerarFrecuenciasEsperadas(
-        df_lista_numeros.size, cantidad_intervalos)
-
+def GeneradorHistograma(df_lista_numeros):
     fig = go.Figure()
 
-    fig.add_trace(go.Histogram(
-        x=df_lista_numeros['Número generado'],
+    fig.add_trace(go.Bar(
+        x=df_lista_numeros["Intervalo"],
+        y=df_lista_numeros["Fo"],
         name='Obtenido',
         marker_color='#330C73',
-        opacity=0.75,
-        xbins=dict(
-            start=0.0,
-            end=1.0,
-            size=1 / cantidad_intervalos
-        )
+        opacity=0.75
     ))
 
-    fig.add_trace(go.Histogram(
-        x=df_lista_numeros['Número generado'],
+    fig.add_trace(go.Bar(
+        x=df_lista_numeros["Intervalo"],
+        y=df_lista_numeros["Fe"],
         name='Esperado',
         marker_color='#EB89B5',
-        opacity=0.75,
-        xbins=dict(
-            start=0.0,
-            end=1.0,
-            size= 1 / cantidad_intervalos
-        )
+        opacity=0.75
     ))
 
     fig.update_layout(
         title_text='Histograma de frecuencias',  # title of plot
         xaxis_title_text='Intervalos',  # xaxis label
         yaxis_title_text='Cantidad',  # yaxis label
-        bargap=0.2,  # gap between bars of adjacent location coordinates
-        bargroupgap=0.1  # gap between bars of the same location coordinates
+        bargap=0,  # gap between bars of adjacent location coordinates
+        bargroupgap=0,  # gap between bars of the same location coordinates
+        barmode='overlay'
     )
 
     return fig
 
 
-def GenerarFrecuenciasEsperadas(tamaño_muestra, cantidad_intervalos):
-    frecuencia_esperada = tamaño_muestra / cantidad_intervalos
+def GenerarFrecuenciasEsperadas(cantidad_numeros, cantidad_intervalos):
+    frecuencia_esperada = cantidad_numeros / cantidad_intervalos
     lista = [frecuencia_esperada] * cantidad_intervalos
+    print(lista)
     return lista
 
 

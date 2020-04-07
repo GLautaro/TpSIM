@@ -22,11 +22,9 @@ def LoadPage():
         'Elegir Método:',
         list(range(len(opciones))), format_func=lambda x: opciones[x])
 
-    semilla = st.sidebar.number_input(
-            'Semilla (X0):', min_value=0, value=0, format='%d')
-            
     if opcion_seleccionada != 2:
-        
+        semilla = st.sidebar.number_input(
+            'Semilla (X0):', min_value=0, value=0, format='%d')
         # TODO: CAMBIAR POR K
         constante_multiplicativa = st.sidebar.number_input(
             'Constante multiplicativa (a):', min_value=0, value=0, format='%d')
@@ -38,7 +36,9 @@ def LoadPage():
             constante_aditiva = st.sidebar.number_input(
                 'Constante Aditiva (c):', min_value=0, value=0, format='%d')
     else:
-        semilla, constante_aditiva, constante_multiplicativa, modulo, = 0, 0, 0, 0
+        semilla = st.sidebar.number_input(
+            'Semilla (X0):', min_value=-1, value=0, format='%d')
+        constante_aditiva, constante_multiplicativa, modulo, = 0, 0, 0
 
     st.sidebar.subheader('📊Opciones del histograma de frecuencias:')
     intervalos = st.sidebar.slider('Seleccione la cantidad de intervalos:',
@@ -51,18 +51,29 @@ def LoadPage():
     gen_ok = st.sidebar.button('Iniciar Simulación')
     if gen_ok:
         try:
-            lista_numeros = generador.ListaNumerosAleatorios(
-                opcion_seleccionada, array_length, semilla, constante_multiplicativa, modulo, constante_aditiva)
-            df_numeros = pd.DataFrame(
-                lista_numeros, columns=['Número generado'])
+            lista_numeros = {"Numero generado": generador.ListaNumerosAleatorios(
+                opcion_seleccionada, array_length, semilla, constante_multiplicativa, modulo, constante_aditiva)}
 
-            st.subheader('Listado de números generados:')
+            df_numeros = pd.DataFrame(lista_numeros)
+
+            st.write('Listado de números generados:')
             st.write(df_numeros)
 
-            st.write(histograma.GeneradorHistograma(df_numeros, intervalos))
+            
+            resultado, df_tabla, grados_libertad = chiCuadrado.PruebaChiCuadrado(list(lista_numeros["Numero generado"]), intervalos, nivel_significancia)
+            st.write(histograma.GeneradorHistograma(df_tabla))
+            
+            st.subheader("Prueba Chi Cuadrado")
+            st.write(df_tabla[["Intervalo","Fo","Fe","C","C(ac)"]])
+
+            if resultado == constantes.ResultadosChi2.H0_NO_RECHAZABLE:
+                st.write("Para un nivel de significancia de " + str(nivel_significancia), "la prueba de Chi Cuadrado considera la Hipotesis Nula como No Rechazable")
+            else:
+                st.write("Para un nivel de significancia de " + str(nivel_significancia), "la prueba de Chi Cuadrado considera la Hipotesis Nula como Rechazada")
+
 
         except ZeroDivisionError as err:
             st.error(
                 'Ups! Ocurrió un error, revise los parametros ingresados. Error:' + str(err))
-        except:
-            st.error("Ups! Ocurrió un error. Error:" + str(err))
+        except Exception as err:
+            st.error("Ups! Ocurrió un error. Error: " + str(err))

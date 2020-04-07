@@ -7,8 +7,9 @@ def Truncate(n, decimals=0):
     multiplier = 10 ** decimals
     return int(n * multiplier) / multiplier
 
-def ListaAleatoriaNativa(n, s):
-    random.seed(s)
+def ListaAleatoriaNativa(n, s=None):
+    if s is not None:
+        random.seed(s)
     numbers_array = list(map(lambda x: Truncate(x, 4), [random.random() for i in range(n)]))
     return numbers_array
 
@@ -40,4 +41,7 @@ def ListaNumerosAleatorios(opcion_seleccionada, n, x, a, m, c):
         elif opcion_seleccionada == 1:
             return ListaAleatoriaCongruencialMultiplicativo(n,x,a,m)
         elif opcion_seleccionada == 2:
-            return ListaAleatoriaNativa(n, x)
+            if x < 0:
+                return ListaAleatoriaNativa(n)
+            else:
+                return ListaAleatoriaNativa(n,x)

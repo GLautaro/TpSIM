@@ -28,7 +28,7 @@ def EstadisticoChi2Acumulado(frec_obs, frec_esp=None,):
         frec_esp = list([val for i in range(len(frec_obs))])
 
     for i in range(len(frec_obs)):
-        ci = EstadisticoChi2(frec_obs[i],frec_esp[i])
+        ci = EstadisticoChi2(frec_obs[i], frec_esp[i])
         chi2_acu += ci
         chi2_valores.append(round(ci,2))
     return grados_libertad, round(chi2_acu, 2), chi2_valores, frec_esp
@@ -151,15 +151,17 @@ def testPruebaChi2():
     '''
     arr = [0.15,0.22,0.41,0.65,0.84,0.81,0.62,0.45,0.32,0.07,0.11,0.29,0.58,0.73,0.93,0.97,0.79,0.55,0.35,0.09,0.99,0.51,0.35,0.02,0.19,0.24,0.98,0.10,0.31,0.17]
     nivel_significancia = 0.5
-    cantidad_intervalos = 20
+    cantidad_intervalos = 5
     resultado,df,grados_libertad = PruebaChiCuadrado(arr,cantidad_intervalos,nivel_significancia)
     if resultado == ResultadosChi2.H0_RECHAZADA:
-        print("La funcion no se comporta de manera esperada")        
+        print("La funcion no se comporta de manera esperada")
+        return resultado,df,grados_libertad      
     else:
         print("La funcion se comporta correctamente")
         print(resultado)
         print(df)
         print(grados_libertad)
+        return resultado,df,grados_libertad
 
 if __name__ == "__main__":
     testEstadisticoChi2Acumulado()
