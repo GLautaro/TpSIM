@@ -13,8 +13,10 @@ def ListaAleatoriaNativa(n, s=None):
     numbers_array = list(map(lambda x: Truncate(x, 4), [random.random() for i in range(n)]))
     return numbers_array
 
-def ListaAleatoriaCongruencialLineal(n,x,a,m,c):
+def ListaAleatoriaCongruencialLineal(n,x,k,g,c):
     numeros_generados = []
+    a = 1 + 4*k
+    m = 2**g
     for i in range(n):
         x = (a*x + c)%m
         y = x/(m-1)
@@ -23,11 +25,14 @@ def ListaAleatoriaCongruencialLineal(n,x,a,m,c):
     return numeros_generados
 
 '''La función implementa el método Congruencial Multiplicativo
-    Parametros: n: tamaño de la muestra, x: Semilla, a: Constante Multiplicativa, m: Módulo
+    Parametros: n: tamaño de la muestra, x: Semilla, k: entero para obtener la constante multiplicativa, 
+                g: entero para obtener el módulo
     Retorna list : Lista con los números generados
 '''
-def ListaAleatoriaCongruencialMultiplicativo(n,x,a,m):
+def ListaAleatoriaCongruencialMultiplicativo(n,x,k,g):
     numeros_generados = []
+    a = 3 + 8*k
+    m = 2**g
     for i in range(n):
         x = ((a*x)%m)
         y = x/(m-1)
@@ -35,11 +40,11 @@ def ListaAleatoriaCongruencialMultiplicativo(n,x,a,m):
 
     return numeros_generados
 
-def ListaNumerosAleatorios(opcion_seleccionada, n, x, a, m, c):
+def ListaNumerosAleatorios(opcion_seleccionada, n, x, k, g, c):
         if opcion_seleccionada == 0:
-            return ListaAleatoriaCongruencialLineal(n,x,a,m,c)
+            return ListaAleatoriaCongruencialLineal(n,x,k,g,c)
         elif opcion_seleccionada == 1:
-            return ListaAleatoriaCongruencialMultiplicativo(n,x,a,m)
+            return ListaAleatoriaCongruencialMultiplicativo(n,x,k,g)
         elif opcion_seleccionada == 2:
             if x < 0:
                 return ListaAleatoriaNativa(n)

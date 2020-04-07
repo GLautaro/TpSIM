@@ -25,12 +25,10 @@ def LoadPage():
     if opcion_seleccionada != 2:
         semilla = st.sidebar.number_input(
             'Semilla (X0):', min_value=0, value=0, format='%d')
-        # TODO: CAMBIAR POR K
-        constante_multiplicativa = st.sidebar.number_input(
-            'Constante multiplicativa (a):', min_value=0, value=0, format='%d')
-        # TODO: CAMBIAR POR G
-        modulo = st.sidebar.number_input(
-            'Módulo (m):', min_value=0, value=0, format='%d')
+        entero_k = st.sidebar.number_input(
+            'Entero (k) para obtener la constante multiplicativa:', min_value=0, value=0, format='%d')
+        entero_g = st.sidebar.number_input(
+            'Entero (g) para obtener el módulo:', min_value=0, value=0, format='%d')
         constante_aditiva = 0
         if opcion_seleccionada == 0:
             constante_aditiva = st.sidebar.number_input(
@@ -38,7 +36,7 @@ def LoadPage():
     else:
         semilla = st.sidebar.number_input(
             'Semilla (X0):', min_value=-1, value=0, format='%d')
-        constante_aditiva, constante_multiplicativa, modulo, = 0, 0, 0
+        constante_aditiva, entero_k, entero_g, = 0, 0, 0
 
     st.sidebar.subheader('📊Opciones del histograma de frecuencias:')
     intervalos = st.sidebar.slider('Seleccione la cantidad de intervalos:',
@@ -52,7 +50,7 @@ def LoadPage():
     if gen_ok:
         try:
             lista_numeros = {"Numero generado": generador.ListaNumerosAleatorios(
-                opcion_seleccionada, array_length, semilla, constante_multiplicativa, modulo, constante_aditiva)}
+                opcion_seleccionada, array_length, semilla, entero_k, entero_g, constante_aditiva)}
 
             df_numeros = pd.DataFrame(lista_numeros)
 
