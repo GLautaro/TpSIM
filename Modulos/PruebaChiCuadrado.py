@@ -1,5 +1,6 @@
 from scipy.stats import chi2
 from Modulos.Constantes import ResultadosChi2
+from Modulos.GeneradoresAleatorios import Truncate
 import pandas as pd
 
 def EstadisticoChi2(frec_obs, frec_esp):
@@ -86,13 +87,13 @@ def PruebaChiCuadrado(lista_valores, cantidad_intervalos, nivel_significancia):
     intervalos = CrearIntervalos(limites_intervalos)
     contador_intervalos = ContarFrecuencias(lista_valores, intervalos)  
     grados_libertad, chi2_ac, chi2_lista, frec_esp = EstadisticoChi2Acumulado(list(contador_intervalos.values()))
-    valor_critico = chi2.ppf(1 - nivel_significancia, grados_libertad)
+    valor_critico = Truncate(chi2.ppf(1 - nivel_significancia, grados_libertad), 4)
     chi2_inter = {list(contador_intervalos.keys())[i]: chi2_lista[i] for i in range(len(contador_intervalos.keys()))}
 
     if chi2_ac < valor_critico:
-        return ResultadosChi2.H0_NO_RECHAZABLE, CrearDataframe(chi2_inter, contador_intervalos, frec_esp, limites_intervalos), grados_libertad
+        return ResultadosChi2.H0_NO_RECHAZABLE, valor_critico, CrearDataframe(chi2_inter, contador_intervalos, frec_esp, limites_intervalos), grados_libertad
     else:
-        return ResultadosChi2.H0_RECHAZADA, CrearDataframe(chi2_inter, contador_intervalos, frec_esp, limites_intervalos), grados_libertad
+        return ResultadosChi2.H0_RECHAZADA, valor_critico, CrearDataframe(chi2_inter, contador_intervalos, frec_esp, limites_intervalos), grados_libertad
 
 def CrearDataframe(chi2_inter, contador_intervalos, frec_esp, limites_intervalos):
     '''

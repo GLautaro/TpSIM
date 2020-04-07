@@ -58,16 +58,16 @@ def LoadPage():
             st.write(df_numeros)
 
             
-            resultado, df_tabla, grados_libertad = chiCuadrado.PruebaChiCuadrado(list(lista_numeros["Numero generado"]), intervalos, nivel_significancia)
+            resultado, valor_critico, df_tabla, grados_libertad = chiCuadrado.PruebaChiCuadrado(list(lista_numeros["Numero generado"]), intervalos, nivel_significancia)
             st.write(histograma.GeneradorHistograma(df_tabla))
             
             st.subheader("Prueba Chi Cuadrado")
             st.write(df_tabla[["Intervalo","Fo","Fe","C","C(ac)"]])
 
             if resultado == constantes.ResultadosChi2.H0_NO_RECHAZABLE:
-                st.write("Para un nivel de significancia de " + str(nivel_significancia), "la prueba de Chi Cuadrado considera la Hipotesis Nula como No Rechazable")
+                st.write("Para un nivel de significancia de " + str(nivel_significancia), "y un valor crítico de: " + str(valor_critico), ". La prueba de Chi Cuadrado considera la Hipotesis Nula como No Rechazable")
             else:
-                st.write("Para un nivel de significancia de " + str(nivel_significancia), "la prueba de Chi Cuadrado considera la Hipotesis Nula como Rechazada")
+                st.write("Para un nivel de significancia de " + str(nivel_significancia), "y un valor crítico de: " + str(valor_critico), " .La prueba de Chi Cuadrado considera la Hipotesis Nula como Rechazada")
 
 
         except ZeroDivisionError as err:
