@@ -75,16 +75,16 @@ def LoadPage():
 
             st.write('Listado de números generados:')
             #st.write(df_numeros)
-            fig = go.Figure(data=[go.Table(
+            tabla_valores = go.Figure(data=[go.Table(
                 header=dict(values= ["Iteracion"] + list(df_numeros.columns),
                 fill_color='paleturquoise',
-                align='left'),
+                align='center'),
                 cells=dict(values=[df_numeros.index, df_numeros["Numero generado"]],
                 fill_color='lavender',
-                align='left'))
+                align='center'))
             ])
 
-            st.write(fig)
+            st.write(tabla_valores)
 
 
 
@@ -94,7 +94,16 @@ def LoadPage():
             st.write(histograma.GeneradorHistograma(df_tabla))
             
             st.subheader("📊Prueba Chi Cuadrado")
-            st.write(df_tabla[["Intervalo","Fo","Fe","C","C(ac)"]])
+            
+            tabla_chi = go.Figure(data=[go.Table(
+                header=dict(values=["Intervalo", "Fo", "Fe", "C", "C(ac)"],
+                fill_color='paleturquoise',
+                align='center'),
+                cells=dict(values=[df_tabla.Intervalo, df_tabla.Fo, df_tabla.Fe, df_tabla.C, df_tabla["C(ac)"]],
+                fill_color='lavender',
+                align='center'))
+            ])
+            st.write(tabla_chi)
 
             if resultado == constantes.ResultadosChi2.H0_NO_RECHAZABLE:
                 st.write("Para un nivel de significancia de " + str(nivel_significancia), "y un valor crítico de: " + str(valor_critico), ". La prueba de Chi Cuadrado considera la Hipotesis Nula como No Rechazable")

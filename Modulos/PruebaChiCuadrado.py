@@ -1,6 +1,7 @@
 from scipy.stats import chi2
 from Modulos.Constantes import ResultadosChi2
 from Modulos.GeneradoresAleatorios import Truncate
+
 import pandas as pd
 
 def EstadisticoChi2(frec_obs, frec_esp):
@@ -9,7 +10,7 @@ def EstadisticoChi2(frec_obs, frec_esp):
     Parametros: frec_obs : int Frecuencia observada para un intervalo
                 frec_esp : int Frecuencia esperada para un intervalo
     '''
-    return ((frec_obs - frec_esp) ** 2) / frec_esp
+    return Truncate(((frec_obs - frec_esp) ** 2) / frec_esp, 4)
 
 def EstadisticoChi2Acumulado(frec_obs, frec_esp=None,):
     '''
@@ -25,14 +26,14 @@ def EstadisticoChi2Acumulado(frec_obs, frec_esp=None,):
     chi2_acu = 0
     grados_libertad = len(frec_obs) - 1
     if frec_esp is None:
-        val = sum(frec_obs) / len(frec_obs)
+        val = round(sum(frec_obs) / len(frec_obs),2)
         frec_esp = list([val for i in range(len(frec_obs))])
 
     for i in range(len(frec_obs)):
         ci = EstadisticoChi2(frec_obs[i], frec_esp[i])
         chi2_acu += ci
-        chi2_valores.append(round(ci,2))
-    return grados_libertad, round(chi2_acu, 2), chi2_valores, frec_esp
+        chi2_valores.append(Truncate(ci, 4))
+    return grados_libertad, Truncate(chi2_acu, 4), chi2_valores, frec_esp
 
 def ContarFrecuencias(lista_valores, intervalos):
     ''' La funcion devuelve la cantidad de valores de la lista que se ajustan a cada intervalo
@@ -112,7 +113,7 @@ def CrearDataframe(chi2_inter, contador_intervalos, frec_esp, limites_intervalos
     chi2_l_acumulada = [list(chi2_inter.values())[0]]
 
     for i in range(1, len(list(chi2_inter.values()))):
-        n = chi2_l_acumulada[i - 1] + list(chi2_inter.values())[i]
+        n = Truncate(chi2_l_acumulada[i - 1] + list(chi2_inter.values())[i], 4)
         chi2_l_acumulada.append(n)
     
     pandas_interval = []    

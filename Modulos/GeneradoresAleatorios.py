@@ -29,7 +29,7 @@ def ListaAleatoriaCongruencialLineal(n,x,k,g,c):
                 g: entero para obtener el módulo
     Retorna list : Lista con los números generados
 '''
-def ListaAleatoriaCongruencialMultiplicativo(n,x,k,g):
+def ListaAleatoriaCongruencialMultiplicativo(n, x, k, g):
     numeros_generados = []
     a = 3 + 8*k
     m = 2**g
@@ -45,6 +45,7 @@ def ListaNumerosAleatorios(opcion_seleccionada, n, x, k, g, c):
             return ListaAleatoriaCongruencialLineal(n,x,k,g,c)
         elif opcion_seleccionada == 1:
             return ListaAleatoriaCongruencialMultiplicativo(n,x,k,g)
+        
         elif opcion_seleccionada == 2:
             if x < 0:
                 return ListaAleatoriaNativa(n)
