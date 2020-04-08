@@ -39,8 +39,8 @@ def LoadPage():
         constante_aditiva, entero_k, entero_g, = 0, 0, 0
 
     st.sidebar.subheader('📊Opciones del histograma de frecuencias:')
-    intervalos = st.sidebar.slider('Seleccione la cantidad de intervalos:',
-                                   min_value=5, value=5, max_value=20, step=5)
+    intervalos = st.sidebar.radio('Seleccione la cantidad de intervalos:',
+                                   [5, 10, 15, 20])
 
     st.sidebar.subheader('📈Opciones de la prueba de Chi-Cuadrado:')
     nivel_significancia = st.sidebar.number_input(
