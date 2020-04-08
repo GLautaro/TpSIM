@@ -42,12 +42,22 @@ def ContarFrecuencias(lista_valores, intervalos):
                     extremos_intervalo: [extremo_inferior, extremo_superior] Parametro implicito contenido dentro del diccionario
         Retorno: Dict<str,int> Diccionario que contiene la cantidad de elementos encontrados para cada intervalo
     '''
-    contador_intervalos = {k:0 for k in intervalos.keys()} #Inicializa los contadores utilizando las claves del diccionario pasado como parametro como claves propias
+    lista_claves = list(intervalos.keys())
+    lista_extremos = list(intervalos.values())
+
+    contador_intervalos = {k:0 for k in lista_claves} #Inicializa los contadores utilizando las claves del diccionario pasado como parametro como claves propias
     
-    for k,v in intervalos.items(): #Se itera sobre todos los intervalos pasados como parametro
-        contador_intervalos[k] = len(list(
-            filter(lambda x: v[0] <= x and x < v[1], lista_valores) #Se filtra la cantidad de elementos de lista_valores que esta contenido en un intervalo dado
+    for i in range(len(lista_claves)): #Se itera sobre todos los intervalos pasados como parametro
+        if i == len(lista_claves) - 1:
+            contador_intervalos[lista_claves[i]] = len(list(
+            filter(lambda x: lista_extremos[i][0] <= x and x <= lista_extremos[i][1], lista_valores) #Se filtra la cantidad de elementos de lista_valores que esta contenido en un intervalo dado
         ))
+            continue
+        else:
+            contador_intervalos[lista_claves[i]] = len(list(
+            filter(lambda x: lista_extremos[i][0] <= x and x < lista_extremos[i][1], lista_valores) #Se filtra la cantidad de elementos de lista_valores que esta contenido en un intervalo dado
+        ))
+        
     return contador_intervalos
 
 def CrearLimitesIntervalos(cantidad_intervalos):
