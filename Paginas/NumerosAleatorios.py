@@ -7,7 +7,7 @@ import Modulos.PruebaChiCuadrado as chiCuadrado
 # Importacion de modulos de terceros
 import streamlit as st
 import pandas as pd
-
+import plotly.graph_objects as go
 
 def LoadPage():
     st.title('🔢Numeros Aleatorios')
@@ -74,7 +74,20 @@ def LoadPage():
             df_numeros = pd.DataFrame(lista_numeros)
 
             st.write('Listado de números generados:')
-            st.write(df_numeros)
+            #st.write(df_numeros)
+            fig = go.Figure(data=[go.Table(
+                header=dict(values= ["Iteracion"] + list(df_numeros.columns),
+                fill_color='paleturquoise',
+                align='left'),
+                cells=dict(values=[df_numeros.index, df_numeros["Numero generado"]],
+                fill_color='lavender',
+                align='left'))
+            ])
+
+            st.write(fig)
+
+
+
 
             resultado, valor_critico, df_tabla, grados_libertad = chiCuadrado.PruebaChiCuadrado(list(lista_numeros["Numero generado"]), intervalos, nivel_significancia)
 
