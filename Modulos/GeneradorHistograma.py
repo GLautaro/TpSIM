@@ -17,7 +17,7 @@ def GeneradorHistograma(df_lista_numeros):
         x=df_lista_numeros["Intervalo"],
         y=df_lista_numeros["Fo"],
         name='Obtenido',
-        marker_color='#330C73',
+        marker_color='#0E61FD',
         opacity=0.75
     ))
 
@@ -25,8 +25,8 @@ def GeneradorHistograma(df_lista_numeros):
         x=df_lista_numeros["Intervalo"],
         y=df_lista_numeros["Fe"],
         name='Esperado',
-        marker_color='#EB89B5',
-        opacity=0.75
+        marker_color='#FD0E2F',
+        opacity=0.55
     ))
 
     fig.update_layout(

@@ -15,8 +15,7 @@ def LoadPage():
     st.write('Si selecciona "Principal" usted podra realizar las siguientes funcionalidades:')
     st.subheader('🔢Numeros Aleatorios.')
     st.markdown('Permite generar una serie de numeros aleatorios utilizando ' 
-                'los metodos congruenciales mixto y multipticativo.')
+                'los metodos congruenciales lineal y multipticativo.')
     st.subheader('📊Prueba de Chi-Cuadrado.')   
     st.markdown('Permite generar una serie de numeros aleatorios y a esta se le aplica el test ' 
                 'de Chi-Cuadrado y muestra el histograma de frecuencias.')
-

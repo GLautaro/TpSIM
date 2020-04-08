@@ -44,7 +44,7 @@ def LoadPage():
 
     st.sidebar.subheader('📈Opciones de la prueba de Chi-Cuadrado:')
     nivel_significancia = st.sidebar.number_input(
-        'Nivel de Significancia:', min_value=0.0, max_value=100.0)
+        'Nivel de Significancia:', min_value=0.0, max_value=1.0)
 
     gen_ok = st.sidebar.button('Iniciar Simulación')
     if gen_ok:
@@ -52,16 +52,35 @@ def LoadPage():
             lista_numeros = {"Numero generado": generador.ListaNumerosAleatorios(
                 opcion_seleccionada, array_length, semilla, entero_k, entero_g, constante_aditiva)}
 
+            if opcion_seleccionada == 0:
+                st.write('Generación aleatoria utilizando el metodo congruencial lineal.')
+                st.latex(r'''
+                X_{i+1} = (a.X_i + c) \mod(m)
+                ''')
+                st.latex(r'''
+                rnd_i = \dfrac {X_i} {m-1}
+                ''')
+            elif opcion_seleccionada == 1:
+                st.write('Generación aleatoria utilizando el metodo congruencial multiplicativo.')
+                st.latex(r'''
+                X_{i+1} = (a.X_i) \mod(m)
+                ''')
+                st.latex(r'''
+                rnd_i = \dfrac {X_i} {m-1}
+                ''')
+            else:
+                st.write('Generación aleatoria utilizando el metodo nativo de Python Random.')
+
             df_numeros = pd.DataFrame(lista_numeros)
 
             st.write('Listado de números generados:')
             st.write(df_numeros)
 
-            
             resultado, valor_critico, df_tabla, grados_libertad = chiCuadrado.PruebaChiCuadrado(list(lista_numeros["Numero generado"]), intervalos, nivel_significancia)
+
             st.write(histograma.GeneradorHistograma(df_tabla))
             
-            st.subheader("Prueba Chi Cuadrado")
+            st.subheader("📊Prueba Chi Cuadrado")
             st.write(df_tabla[["Intervalo","Fo","Fe","C","C(ac)"]])
 
             if resultado == constantes.ResultadosChi2.H0_NO_RECHAZABLE:
@@ -75,3 +94,6 @@ def LoadPage():
                 'Ups! Ocurrió un error, revise los parametros ingresados. Error:' + str(err))
         except Exception as err:
             st.error("Ups! Ocurrió un error. Error: " + str(err))
+
+
+
