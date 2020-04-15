@@ -10,7 +10,9 @@ def Truncate(n, decimals=0):
 def ListaAleatoriaNativa(n, s=None):
     if s is not None:
         random.seed(s)
-    numbers_array = list(map(lambda x: Truncate(x, 4), [random.random() for i in range(n)]))
+    #La funcion aleatoria se parametriza con el rango [0, 1.00001] para generar numeros aleatorios mayores o iguales a uno
+    #por algunos decimales, que luego son truncados mediante la funcion
+    numbers_array = list([Truncate(random.uniform(0,1.00001), 4) for i in range(n)])
     return numbers_array
 
 def ListaAleatoriaCongruencialLineal(n,x,k,g,c):
