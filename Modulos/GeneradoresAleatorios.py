@@ -1,18 +1,13 @@
 import random
 import numpy as np
-from math import trunc
-
-
-def Truncate(n, decimals=0):
-    multiplier = 10 ** decimals
-    return int(n * multiplier) / multiplier
+from Modulos.Utils import Truncate
 
 def ListaAleatoriaNativa(n, s=None):
     if s is not None:
         random.seed(s)
     #La funcion aleatoria se parametriza con el rango [0, 1.00001] para generar numeros aleatorios mayores o iguales a uno
     #por algunos decimales, que luego son truncados mediante la funcion
-    numbers_array = list([Truncate(random.uniform(0,1.00001), 4) for i in range(n)])
+    numbers_array = list([Truncate(random.uniform(0,1.0001), 4) for i in range(n)])
     return numbers_array
 
 def ListaAleatoriaCongruencialLineal(n,x,k,g,c):
@@ -41,7 +36,6 @@ def ListaAleatoriaCongruencialMultiplicativo(n, x, k, g):
         numeros_generados.append(Truncate(y, 4))
 
     return numeros_generados
-
 def ListaNumerosAleatorios(opcion_seleccionada, n, x, k, g, c):
         if opcion_seleccionada == 0:
             return ListaAleatoriaCongruencialLineal(n,x,k,g,c)

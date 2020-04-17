@@ -3,7 +3,8 @@ import Modulos.GeneradoresAleatorios as generador
 import Modulos.Constantes as constantes
 import Modulos.GeneradorHistograma as histograma
 import Modulos.PruebaChiCuadrado as chiCuadrado
-
+from Modulos.Utils import GenerarExcel
+import os
 # Importacion de modulos de terceros
 import streamlit as st
 import pandas as pd
@@ -13,7 +14,7 @@ def LoadPage():
     st.title('🔢Numeros Aleatorios')
     array_length = st.sidebar.number_input(
         'Ingrese la cantidad de numeros que desea generar', min_value=0, value=10, format='%d')
-
+    exportar_como_excel = st.sidebar.checkbox("Abrir como excel",value=True)
     opciones = ['Congruencial Lineal',
                 'Congruencial Multiplicativo', 'Función Nativa']
 
@@ -109,13 +110,19 @@ def LoadPage():
                 st.write("Para un nivel de significancia de " + str(nivel_significancia), "y un valor crítico de: " + str(valor_critico), ". La prueba de Chi Cuadrado considera la Hipotesis Nula como No Rechazable")
             else:
                 st.write("Para un nivel de significancia de " + str(nivel_significancia), "y un valor crítico de: " + str(valor_critico), " .La prueba de Chi Cuadrado considera la Hipotesis Nula como Rechazada")
-
+            if exportar_como_excel:
+                nombre_archivo = "tabla_numeros.xlsx"
+                GenerarExcel({
+                    "Lista_Valores_Aleatorios": df_numeros,
+                    "Tabla_prueba_Chi2": df_tabla[["Intervalo","Fo","Fe","C","C(ac)"]]
+                },
+                nombre_archivo)
+                os.startfile(nombre_archivo)
 
         except ZeroDivisionError as err:
             st.error(
                 'Ups! Ocurrió un error, revise los parametros ingresados. Error:' + str(err))
         except Exception as err:
             st.error("Ups! Ocurrió un error. Error: " + str(err))
-
 
 
