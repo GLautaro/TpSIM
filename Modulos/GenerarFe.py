@@ -28,32 +28,28 @@ def FrecuenciasEsperadas(tamaño_muestra, intervalos, tipoDistribucion, media, d
                    intervalos: intervalos Dict<str, extremos> Diccionario que utiliza como clave la representacion del intervalo
                    tipoDistribucion: entero que representa el tipo de distribución elegida como hipótesis nula (0=uniforme, 1=exponencial, 2=normal)
                    media: media calculada para la serie
-       Return: lista con frecuencias esperadas'''    
+       Return: lista con frecuencias esperadas'''
+    
     frec_esp_arr = []
+    valor_lambda = 1/media
+    print('Lambda: ', valor_lambda)
 
-    if tipoDistribucion == 0:
-        pass
-
-    elif tipoDistribucion == 1:
-        valor_lambda = 1/media
-        print('Lambda: ', valor_lambda)
-        for i in intervalos:
-            intervalo = intervalos[i]
-            desde, hasta = intervalo[0], intervalo[1]
-            prob_acum = ProbabilidadAcumulada(desde, hasta, valor_lambda)
-            frec_esp = prob_acum*tamaño_muestra
-            frec_esp_arr.append(frec_esp)
-        return frec_esp_arr
-
-    elif tipoDistribucion == 2:
-        for i in intervalos:
-            intervalo = intervalos[i]
-            desde, hasta = intervalo[0], intervalo[1]
+    for i in intervalos:
+        intervalo = intervalos[i]
+        desde, hasta = intervalo[0], intervalo[1]
+        
+        if tipoDistribucion == 1:
+            prob = ProbabilidadAcumulada(desde, hasta, valor_lambda)
+        
+        elif tipoDistribucion == 2:
             marca_clase = (desde+hasta)/2
             prob = FuncionDensidadNormal(marca_clase, media, desviacion_estandar)*(hasta-desde)
-            frec_esp = prob*tamaño_muestra
-            frec_esp_arr.append(frec_esp)
-        return frec_esp_arr
+        
+        frec_esp = prob*tamaño_muestra
+        
+        frec_esp_arr.append(frec_esp)
+    
+    return frec_esp_arr
 
 def testFrecuenciasEsperadasExponencial():
     arr = [0.10, 0.25, 1.53, 2.83, 3.50, 4.14, 5.65, 6.96, 7.19, 8.25,1.20, 5.24, 4.75, 3.96, 2.21, 3.15, 2.53, 1.16, 0.32, 0.90, 0.87, 1.34, 1.87, 2.91, 0.71, 1.69, 0.69, 0.55, 0.43, 0.26]

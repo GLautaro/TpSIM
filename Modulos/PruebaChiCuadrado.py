@@ -87,6 +87,7 @@ def CrearIntervalos(limites_intervalos):
     return intervalos
 
 def PruebaChiCuadrado(lista_valores, cantidad_intervalos, nivel_significancia):
+    #Añadir parámetro tipoDistribución
     '''
     La funcion realiza la prueba de Chi^2 sobre una lista de valores dados
     Parametros: lista_valores List<float> lista de valores sobre los cuales se desea realizar la prueba
@@ -98,8 +99,9 @@ def PruebaChiCuadrado(lista_valores, cantidad_intervalos, nivel_significancia):
     '''
     limites_intervalos = CrearLimitesIntervalos(cantidad_intervalos)
     intervalos = CrearIntervalos(limites_intervalos)
-    #frec_esp = FrecuenciasEsperadas(len(lista_valores), intervalos, tipoDistribucion, stats.mean(lista_valores), np.std(lista_valores, ddof=1))
-    contador_intervalos = ContarFrecuencias(lista_valores, intervalos)  
+    contador_intervalos = ContarFrecuencias(lista_valores, intervalos)
+    #if tipoDistribucion == 1 || tipoDistribucion == 2:
+        #frec_esp = FrecuenciasEsperadas(len(lista_valores), intervalos, tipoDistribucion, stats.mean(lista_valores), np.std(lista_valores, ddof=1))  
     grados_libertad, chi2_ac, chi2_lista, frec_esp = EstadisticoChi2Acumulado(list(contador_intervalos.values()))
     valor_critico = Truncate(chi2.ppf(1 - nivel_significancia, grados_libertad), 4)
     chi2_inter = {list(contador_intervalos.keys())[i]: chi2_lista[i] for i in range(len(contador_intervalos.keys()))}
