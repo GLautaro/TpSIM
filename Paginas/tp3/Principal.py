@@ -4,7 +4,7 @@ import streamlit as st
 
 def LoadPage():
     st.title('🔢Simulación con distribuciones probabilisticas continuas.🔢')
-    st.markdown('Simulación - Trabajo Práctico de Laboratorio 2')
+    st.markdown('Simulación - Trabajo Práctico de Laboratorio 3')
     st.write('Se desarrollo esta aplicación que permite generar series de numeros aleatorios utilizando distintas distribuciones, visualizar '
             'histogramas de frecuencias y realizar la prueba de Chi-Cuadrado.')
     for i in range(2):
