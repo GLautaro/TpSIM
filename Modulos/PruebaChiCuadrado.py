@@ -4,6 +4,7 @@ from Modulos.GeneradoresAleatorios import Truncate
 from Modulos.GenerarFe import FrecuenciasEsperadas
 import pandas as pd
 import statistics as stats
+import numpy as np
 
 def EstadisticoChi2(frec_obs, frec_esp):
     ''' 
@@ -97,7 +98,7 @@ def PruebaChiCuadrado(lista_valores, cantidad_intervalos, nivel_significancia):
     '''
     limites_intervalos = CrearLimitesIntervalos(cantidad_intervalos)
     intervalos = CrearIntervalos(limites_intervalos)
-    #frec_esp = FrecuenciasEsperadas(len(lista_valores), intervalos, tipoDistribucion, stats.mean(lista_valores))
+    #frec_esp = FrecuenciasEsperadas(len(lista_valores), intervalos, tipoDistribucion, stats.mean(lista_valores), np.std(lista_valores, ddof=1))
     contador_intervalos = ContarFrecuencias(lista_valores, intervalos)  
     grados_libertad, chi2_ac, chi2_lista, frec_esp = EstadisticoChi2Acumulado(list(contador_intervalos.values()))
     valor_critico = Truncate(chi2.ppf(1 - nivel_significancia, grados_libertad), 4)
