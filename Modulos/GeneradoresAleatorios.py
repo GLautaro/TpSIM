@@ -10,6 +10,15 @@ def ListaAleatoriaNativa(n, s=None):
     numbers_array = list([Truncate(random.uniform(0,1.0001), 4) for i in range(n)])
     return numbers_array
 
+'''La función genera una muestra de n números aleatorios con distribución exponencial negativa
+    Parametros: n: tamaño de la muestra, lambd: lambda representa la frecuencia con la que ocurre el evento bajo análisis (1/media)
+    Si se ingresa un lambda negativo la funcion genera números comprendidos entre infinito negativo y cero. 
+    Si se ingresa un lambda positivo la funcion genera números que se encuentran entre cero e infinito
+    Retorna list : Lista con los números generados
+'''
+def distribucionExponencial(n, lambd):
+    return list([Truncate(random.expovariate(lambd), 4) for i in range(n)])
+
 def ListaAleatoriaCongruencialLineal(n,x,k,g,c):
     numeros_generados = []
     a = 1 + 4*k
