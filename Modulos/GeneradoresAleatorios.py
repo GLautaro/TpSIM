@@ -11,7 +11,7 @@ def ListaAleatoriaNativa(n, superior=1.0001,inferior=0, s=None):
     return numbers_array
 
 '''La función genera una muestra de n números aleatorios con distribución exponencial negativa
-    Parametros: n: tamaño de la muestra, lambd: lambda representa la frecuencia con la que ocurre el evento bajo análisis (1/media)
+    Parametros: n: tamaño de la muestra, media: valor de la media
     Si se ingresa un lambda negativo la funcion genera números comprendidos entre infinito negativo y cero. 
     Si se ingresa un lambda positivo la funcion genera números que se encuentran entre cero e infinito
     Retorna list : Lista con los números generados
