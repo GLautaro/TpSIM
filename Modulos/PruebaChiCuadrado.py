@@ -63,11 +63,12 @@ def ContarFrecuencias(lista_valores, intervalos):
         
     return contador_intervalos
 
-def CrearLimitesIntervalos(cantidad_intervalos):
+def CrearLimitesIntervalos(cantidad_intervalos, extremo_superior = 1, extremo_inferior = 0):
     '''
     La funcion crea una lista auxiliar utilizada para contener los extremos de los intervalos
     '''
-    amplitud_intervalo = round(1 / cantidad_intervalos, 4)
+    amplitud = extremo_superior - extremo_inferior
+    amplitud_intervalo = round(amplitud / cantidad_intervalos, 4)
     limites_intervalos = [0.0] * (cantidad_intervalos + 1)
     for i in range(len(limites_intervalos) - 1):
         limites_intervalos[i + 1] = round(limites_intervalos[i] + amplitud_intervalo, 3)
