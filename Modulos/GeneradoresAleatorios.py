@@ -16,8 +16,9 @@ def ListaAleatoriaNativa(n, superior=1.0001,inferior=0, s=None):
     Si se ingresa un lambda positivo la funcion genera números que se encuentran entre cero e infinito
     Retorna list : Lista con los números generados
 '''
-def distribucionExponencial(n, lambd):
-    return list([Truncate(random.expovariate(lambd), 4) for i in range(n)])
+def distribucionExponencial(n,  media):
+    valor_lambda=1/media
+    return list([Truncate(random.expovariate(valor_lambda), 4) for i in range(n)])
 
 def ListaAleatoriaCongruencialLineal(n,x,k,g,c):
     numeros_generados = []
