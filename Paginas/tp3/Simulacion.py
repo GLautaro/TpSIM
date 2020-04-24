@@ -38,10 +38,10 @@ def LoadPage():
         extremo_b = st.sidebar.number_input(
             'Extremo b:', min_value=0, value=0, format='%d')
     elif opcion_seleccionada == 1:
-        media_exp = st.sidebar.number_input(
+        media = st.sidebar.number_input(
             'Media μ:', min_value=0.0, value=0.0)
     else:
-        media_nor = st.sidebar.number_input(
+        media = st.sidebar.number_input(
             'Media μ:', min_value=0.0, value=0.0)
         desviacion_est = st.sidebar.number_input(
             'Desviación estandar σ:', min_value=0.0, value=0.0)
@@ -49,7 +49,7 @@ def LoadPage():
     # Opciones del sidebar - Histograma y Chi-cuadrado
     st.sidebar.subheader('📊Opciones del histograma de frecuencias:')
     intervalos = st.sidebar.radio('Seleccione la cantidad de intervalos:',
-                                   [5, 10, 15, 20])
+                                  [5, 10, 15, 20])
 
     st.sidebar.subheader('📈Opciones de la prueba de Chi-Cuadrado:')
     nivel_significancia = st.sidebar.number_input(
@@ -57,36 +57,68 @@ def LoadPage():
 
     gen_ok = st.sidebar.button('Iniciar Simulación')
     if gen_ok:
-        serie_numeros = []
+        try:
+            serie_numeros = []
 
-        if opcion_seleccionada == 0:
-            serie_numeros = generador.ListaAleatoriaNativa(
-                array_length, extremo_a, extremo_b, semilla)
-            st.write(
-                'Generación aleatoria utilizando la distribución uniforme [a, b].')
-            st.latex(r'''
-                X = A + RND(B-A)
-                ''')
-        elif opcion_seleccionada == 1:
-            serie_numeros = generador.distribucionExponencial(
-                array_length, media_exp)
-            st.write('Generación aleatoria utilizando la distribución exponencial.')
-            st.latex(r'''
-                X = \dfrac{-1}{\lambda} * \ln(1-RND)
-                ''')
-            st.latex(r'''
-                siendo: \lambda = \dfrac {1} {\mu}
-                ''')
-        else:
-            st.write('Generación aleatoria utilizando la distribución normal.')
+            if opcion_seleccionada == 0:
+                serie_numeros = generador.ListaAleatoriaNativa(
+                    array_length, extremo_a, extremo_b, semilla)
+                st.write(
+                    'Generación aleatoria utilizando la distribución uniforme [a, b].')
+                st.latex(r'''
+                    X = A + RND(B-A)
+                    ''')
+            elif opcion_seleccionada == 1:
+                serie_numeros = generador.distribucionExponencial(
+                    array_length, media_exp)
+                st.write('Generación aleatoria utilizando la distribución exponencial.')
+                st.latex(r'''
+                    X = \dfrac{-1}{\lambda} * \ln(1-RND)
+                    ''')
+                st.latex(r'''
+                    siendo: \lambda = \dfrac {1} {\mu}
+                    ''')
+            else:
+                st.write('Generación aleatoria utilizando la distribución normal.')
 
-        df_numeros = pd.DataFrame(serie_numeros)
-        st.write(df_numeros)
+            df_numeros = pd.DataFrame(serie_numeros)
 
-        if exportar_como_excel:
+            st.write(df_numeros)
+
+            resultado, valor_critico, df_tabla, grados_libertad = chiCuadrado.PruebaChiCuadrado(
+                serie_numeros, intervalos, nivel_significancia, opcion_seleccionada, media, desviacion_est, extremo_a, extremo_b)
+
+            st.write(histograma.GeneradorHistograma(df_tabla))
+
+            st.subheader("📊Prueba Chi Cuadrado")
+                
+            tabla_chi = go.Figure(data=[go.Table(
+                header=dict(values=["Intervalo", "Fo", "Fe", "C", "C(ac)"],
+                fill_color='paleturquoise',
+                align='center'),
+                cells=dict(values=[df_tabla.Intervalo, df_tabla.Fo, df_tabla.Fe, df_tabla.C, df_tabla["C(ac)"]],
+                fill_color='lavender',
+                align='center'))
+            ])
+            st.write(tabla_chi)
+
+            if resultado == constantes.ResultadosChi2.H0_NO_RECHAZABLE:
+                st.write("Para un nivel de significancia de " + str(nivel_significancia), "y un valor crítico de: " + str(valor_critico), ". La prueba de Chi Cuadrado considera la Hipotesis Nula como No Rechazable")
+            else:
+                st.write("Para un nivel de significancia de " + str(nivel_significancia), "y un valor crítico de: " + str(valor_critico), " .La prueba de Chi Cuadrado considera la Hipotesis Nula como Rechazada")
+
+
+            if exportar_como_excel:
                 nombre_archivo = "tabla_numeros.xlsx"
                 GenerarExcel({
-                    "Lista_Valores_Aleatorios": df_numeros
+                    "Lista_Valores_Aleatorios": df_numeros,
+                    "Tabla_prueba_Chi2": df_tabla[["Intervalo","Fo","Fe","C","C(ac)"]]
                 },
-                nombre_archivo)
+                    nombre_archivo)
                 os.startfile(nombre_archivo)
+  
+        except ZeroDivisionError as err:
+            st.error(
+                'Ups! Ocurrió un error, revise los parametros ingresados. Error:' + str(err))
+        except Exception as err:
+            st.error("Ups! Ocurrió un error. Error: " + str(err))
