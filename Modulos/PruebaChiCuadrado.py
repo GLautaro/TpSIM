@@ -5,7 +5,7 @@ from Modulos.GenerarFe import FrecuenciasEsperadas
 import pandas as pd
 import statistics as stats
 import numpy as np
-
+from math import sqrt
 def EstadisticoChi2(frec_obs, frec_esp):
     ''' 
     La funcion devuelve el valor del estadistico Chi^2 para los valores de frecuencia esperada y observada
@@ -14,7 +14,7 @@ def EstadisticoChi2(frec_obs, frec_esp):
     '''
     return Truncate(((frec_obs - frec_esp) ** 2) / frec_esp, 4)
 
-def EstadisticoChi2Acumulado(frec_obs, frec_esp=None,):
+def EstadisticoChi2Acumulado(frec_obs, frec_esp=None):
     '''
     La funcion calcula el valor acumulado para el estadistico Chi^2 segun una lista de frecuencias observadas
     Parametros: frec_obs : List<int> Lista de valores de frecuencias observadas
@@ -35,7 +35,7 @@ def EstadisticoChi2Acumulado(frec_obs, frec_esp=None,):
         ci = EstadisticoChi2(frec_obs[i], frec_esp[i])
         chi2_acu += ci
         chi2_valores.append(Truncate(ci, 4))
-    return grados_libertad, Truncate(chi2_acu, 4), chi2_valores, frec_esp
+    return grados_libertad, Truncate(chi2_acu, 4), chi2_valores
 
 def ContarFrecuencias(lista_valores, intervalos):
     ''' La funcion devuelve la cantidad de valores de la lista que se ajustan a cada intervalo
@@ -87,7 +87,7 @@ def CrearIntervalos(limites_intervalos):
         } #Se utiliza comprension de listas para generar el diccionario
     return intervalos
 
-def PruebaChiCuadrado(lista_valores, cantidad_intervalos, nivel_significancia):
+def PruebaChiCuadrado(lista_valores, cantidad_intervalos, nivel_significancia, tipoDistribucion, media, desviacion_estandar, superior, inferior):
     #Añadir parámetro tipoDistribución
     '''
     La funcion realiza la prueba de Chi^2 sobre una lista de valores dados
@@ -98,11 +98,11 @@ def PruebaChiCuadrado(lista_valores, cantidad_intervalos, nivel_significancia):
              CrearDataframe() DataFrame : Tabla que permite la visualizacion de los datos calculados
              grados_libertad int : Grados de libertad calculados para la cantidad dada de intervalos
     '''
-    limites_intervalos = CrearLimitesIntervalos(cantidad_intervalos)
+    limites_intervalos = CrearLimitesIntervalos(cantidad_intervalos, superior, inferior)
     intervalos = CrearIntervalos(limites_intervalos)
     contador_intervalos = ContarFrecuencias(lista_valores, intervalos)
-    #frec_esp = FrecuenciasEsperadas(len(lista_valores), intervalos, tipoDistribucion, media, desviacion_estandar, max, min)  
-    grados_libertad, chi2_ac, chi2_lista, frec_esp = EstadisticoChi2Acumulado(list(contador_intervalos.values()))
+    frec_esp = FrecuenciasEsperadas(len(lista_valores), intervalos, tipoDistribucion, media, desviacion_estandar, inferior, superior)  
+    grados_libertad, chi2_ac, chi2_lista = EstadisticoChi2Acumulado(list(contador_intervalos.values()), frec_esp)
     valor_critico = Truncate(chi2.ppf(1 - nivel_significancia, grados_libertad), 4)
     chi2_inter = {list(contador_intervalos.keys())[i]: chi2_lista[i] for i in range(len(contador_intervalos.keys()))}
 
@@ -169,16 +169,18 @@ def testPruebaChi2():
     arr = [0.15,0.22,0.41,0.65,0.84,0.81,0.62,0.45,0.32,0.07,0.11,0.29,0.58,0.73,0.93,0.97,0.79,0.55,0.35,0.09,0.99,0.51,0.35,0.02,0.19,0.24,0.98,0.10,0.31,0.17]
     nivel_significancia = 0.5
     cantidad_intervalos = 5
-    resultado,df,grados_libertad = PruebaChiCuadrado(arr,cantidad_intervalos,nivel_significancia)
+    resultado,valor_critico,df,grados_libertad = PruebaChiCuadrado(arr, cantidad_intervalos, nivel_significancia, 0, 0.5, (sqrt(1/12)), 1, 0)
     if resultado == ResultadosChi2.H0_RECHAZADA:
         print("La funcion no se comporta de manera esperada")
-        return resultado,df,grados_libertad      
+        print(resultado)
+        print(df)
+        print(grados_libertad)
     else:
         print("La funcion se comporta correctamente")
         print(resultado)
         print(df)
         print(grados_libertad)
-        return resultado,df,grados_libertad
+        #return resultado,df,grados_libertad
 
 if __name__ == "__main__":
     testEstadisticoChi2Acumulado()

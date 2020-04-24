@@ -55,19 +55,18 @@ def FrecuenciasEsperadas(tamaño_muestra, intervalos, tipoDistribucion, media, d
     for i in intervalos:
         intervalo = intervalos[i]
         desde, hasta = intervalo[0], intervalo[1]
-
         if tipoDistribucion == 0:
-            prob = ProbabilidadAcumuladaUniforme(desde, hasta, a, b)
-
+          prob = ProbabilidadAcumuladaUniforme(desde, hasta, a, b)
+          frec_esp = round(prob*tamaño_muestra)
         elif tipoDistribucion == 1:
-            prob = ProbabilidadAcumuladaExponencial(desde, hasta, valor_lambda)
+          prob = ProbabilidadAcumuladaExponencial(desde, hasta, valor_lambda)
+          frec_esp = Truncate(prob*tamaño_muestra, 4)
         
         elif tipoDistribucion == 2:
-            marca_clase = (desde+hasta)/2
-            prob = FuncionDensidadNormal(marca_clase, media, desviacion_estandar)*(hasta-desde)
-        
-        frec_esp = Truncate(prob*tamaño_muestra, 4)
-        
+          marca_clase = (desde+hasta)/2
+          prob = FuncionDensidadNormal(marca_clase, media, desviacion_estandar)*(hasta-desde)
+          frec_esp = Truncate(prob*tamaño_muestra, 4)
+          
         frec_esp_arr.append(frec_esp)
     
     return frec_esp_arr
