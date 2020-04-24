@@ -39,12 +39,21 @@ def LoadPage():
             'Extremo b:', min_value=0, value=0, format='%d')
     elif opcion_seleccionada == 1:
         media_exp = st.sidebar.number_input(
-            'Media μ:', min_value=0, value=0)
+            'Media μ:', min_value=0.0, value=0.0)
     else:
         media_nor = st.sidebar.number_input(
-            'Media μ:', min_value=0, value=0)
+            'Media μ:', min_value=0.0, value=0.0)
         desviacion_est = st.sidebar.number_input(
-            'Desviación estandar σ:', min_value=0, value=0)
+            'Desviación estandar σ:', min_value=0.0, value=0.0)
+
+    # Opciones del sidebar - Histograma y Chi-cuadrado
+    st.sidebar.subheader('📊Opciones del histograma de frecuencias:')
+    intervalos = st.sidebar.radio('Seleccione la cantidad de intervalos:',
+                                   [5, 10, 15, 20])
+
+    st.sidebar.subheader('📈Opciones de la prueba de Chi-Cuadrado:')
+    nivel_significancia = st.sidebar.number_input(
+        'Nivel de Significancia:', min_value=0.0, max_value=1.0)
 
     gen_ok = st.sidebar.button('Iniciar Simulación')
     if gen_ok:
