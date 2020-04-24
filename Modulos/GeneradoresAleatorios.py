@@ -2,22 +2,23 @@ import random
 import numpy as np
 from Modulos.Utils import Truncate
 
-def ListaAleatoriaNativa(n, s=None):
+def ListaAleatoriaNativa(n, superior=1.0001,inferior=0, s=None):
     if s is not None:
         random.seed(s)
-    #La funcion aleatoria se parametriza con el rango [0, 1.00001] para generar numeros aleatorios mayores o iguales a uno
+    #La funcion aleatoria se parametriza con el rango [0, 1.00001] para generar numeros aleatorios menores o iguales a uno
     #por algunos decimales, que luego son truncados mediante la funcion
-    numbers_array = list([Truncate(random.uniform(0,1.0001), 4) for i in range(n)])
+    numbers_array = list([Truncate(random.uniform(inferior,superior), 4) for i in range(n)])
     return numbers_array
 
 '''La función genera una muestra de n números aleatorios con distribución exponencial negativa
-    Parametros: n: tamaño de la muestra, lambd: lambda representa la frecuencia con la que ocurre el evento bajo análisis (1/media)
+    Parametros: n: tamaño de la muestra, media: valor de la media
     Si se ingresa un lambda negativo la funcion genera números comprendidos entre infinito negativo y cero. 
     Si se ingresa un lambda positivo la funcion genera números que se encuentran entre cero e infinito
     Retorna list : Lista con los números generados
 '''
-def distribucionExponencial(n, lambd):
-    return list([Truncate(random.expovariate(lambd), 4) for i in range(n)])
+def distribucionExponencial(n, media):
+    valor_lambda=1/media
+    return list([Truncate(random.expovariate(valor_lambda), 4) for i in range(n)])
 
 def ListaAleatoriaCongruencialLineal(n,x,k,g,c):
     numeros_generados = []
