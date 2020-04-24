@@ -12,9 +12,12 @@ def EstadisticoChi2(frec_obs, frec_esp):
     Parametros: frec_obs : int Frecuencia observada para un intervalo
                 frec_esp : int Frecuencia esperada para un intervalo
     '''
+    if frec_esp <= 0:
+        return 0
+
     return Truncate(((frec_obs - frec_esp) ** 2) / frec_esp, 4)
 
-def EstadisticoChi2Acumulado(frec_obs, frec_esp=None):
+def EstadisticoChi2Acumulado(frec_obs, tipoDistribucion,frec_esp=None,):
     '''
     La funcion calcula el valor acumulado para el estadistico Chi^2 segun una lista de frecuencias observadas
     Parametros: frec_obs : List<int> Lista de valores de frecuencias observadas
@@ -25,10 +28,15 @@ def EstadisticoChi2Acumulado(frec_obs, frec_esp=None):
              chi2_valores : Lista de valores del estadistico chi^2 para cada intervalo
     '''
     chi2_valores = []
-    chi2_acu = 0
-    grados_libertad = len(frec_obs) - 1
+    chi2_acu = 0    
+    if tipoDistribucion == 0:
+        grados_libertad = len(frec_obs) - 1
+    elif tipoDistribucion == 1:
+        grados_libertad = len(frec_obs) - 2
+    elif tipoDistribucion == 2:
+        grados_libertad = len(frec_obs) - 3
     if frec_esp is None:
-        val = round(sum(frec_obs) / len(frec_obs),2)
+        val = round(sum(frec_obs) / len(frec_obs), 2)
         frec_esp = list([val for i in range(len(frec_obs))])
 
     for i in range(len(frec_obs)):
@@ -63,13 +71,13 @@ def ContarFrecuencias(lista_valores, intervalos):
         
     return contador_intervalos
 
-def CrearLimitesIntervalos(cantidad_intervalos, extremo_superior = 1, extremo_inferior = 0):
+def CrearLimitesIntervalos(cantidad_intervalos, extremo_inferior = 0, extremo_superior = 1):
     '''
     La funcion crea una lista auxiliar utilizada para contener los extremos de los intervalos
     '''
     amplitud = extremo_superior - extremo_inferior
     amplitud_intervalo = round(amplitud / cantidad_intervalos, 4)
-    limites_intervalos = [0.0] * (cantidad_intervalos + 1)
+    limites_intervalos = [extremo_inferior] * (cantidad_intervalos + 1)
     for i in range(len(limites_intervalos) - 1):
         limites_intervalos[i + 1] = round(limites_intervalos[i] + amplitud_intervalo, 3)
     return limites_intervalos
@@ -87,7 +95,7 @@ def CrearIntervalos(limites_intervalos):
         } #Se utiliza comprension de listas para generar el diccionario
     return intervalos
 
-def PruebaChiCuadrado(lista_valores, cantidad_intervalos, nivel_significancia, tipoDistribucion, media, desviacion_estandar, superior, inferior):
+def PruebaChiCuadrado(lista_valores, cantidad_intervalos, nivel_significancia, tipoDistribucion, media, desviacion_estandar, inferior, superior):
     #Añadir parámetro tipoDistribución
     '''
     La funcion realiza la prueba de Chi^2 sobre una lista de valores dados
@@ -98,11 +106,12 @@ def PruebaChiCuadrado(lista_valores, cantidad_intervalos, nivel_significancia, t
              CrearDataframe() DataFrame : Tabla que permite la visualizacion de los datos calculados
              grados_libertad int : Grados de libertad calculados para la cantidad dada de intervalos
     '''
-    limites_intervalos = CrearLimitesIntervalos(cantidad_intervalos, superior, inferior)
+
+    limites_intervalos = CrearLimitesIntervalos(cantidad_intervalos, inferior, superior)
     intervalos = CrearIntervalos(limites_intervalos)
     contador_intervalos = ContarFrecuencias(lista_valores, intervalos)
-    frec_esp = FrecuenciasEsperadas(len(lista_valores), intervalos, tipoDistribucion, media, desviacion_estandar, inferior, superior)  
-    grados_libertad, chi2_ac, chi2_lista = EstadisticoChi2Acumulado(list(contador_intervalos.values()), frec_esp)
+    frec_esp = FrecuenciasEsperadas(len(lista_valores), intervalos, tipoDistribucion, media, desviacion_estandar, inferior, superior) 
+    grados_libertad, chi2_ac, chi2_lista = EstadisticoChi2Acumulado(list(contador_intervalos.values()), tipoDistribucion, frec_esp)
     valor_critico = Truncate(chi2.ppf(1 - nivel_significancia, grados_libertad), 4)
     chi2_inter = {list(contador_intervalos.keys())[i]: chi2_lista[i] for i in range(len(contador_intervalos.keys()))}
 

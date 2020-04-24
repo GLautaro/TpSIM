@@ -50,7 +50,8 @@ def FrecuenciasEsperadas(tamaño_muestra, intervalos, tipoDistribucion, media, d
        Return: lista con frecuencias esperadas'''
     
     frec_esp_arr = []
-    valor_lambda = Truncate(1/media, 7)
+    if tipoDistribucion == 1:
+        valor_lambda = Truncate(1/media, 7)
 
     for i in intervalos:
         intervalo = intervalos[i]
@@ -64,7 +65,7 @@ def FrecuenciasEsperadas(tamaño_muestra, intervalos, tipoDistribucion, media, d
         
         elif tipoDistribucion == 2:
           marca_clase = (desde+hasta)/2
-          prob = FuncionDensidadNormal(marca_clase, media, desviacion_estandar)*(hasta-desde)
+          prob = FuncionDensidadNormal(marca_clase, media, desviacion_estandar) * (hasta-desde)
           frec_esp = Truncate(prob*tamaño_muestra, 4)
           
         frec_esp_arr.append(frec_esp)

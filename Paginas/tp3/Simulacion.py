@@ -10,14 +10,14 @@ import os
 import streamlit as st
 import pandas as pd
 import numpy as np
-
+import plotly.graph_objects as go
 
 def LoadPage():
     st.title('🔢Generación de variables aleatorias')
 
     # Preparación del sidebar con todos sus inputs.
     array_length = st.sidebar.number_input(
-        'Ingrese la cantidad de numeros que desea generar', min_value=0, value=10, format='%d')
+        'Ingrese la cantidad de numeros que desea generar', min_value=0, value=10000, format='%d')
 
     exportar_como_excel = st.sidebar.checkbox("Abrir como excel", value=True)
 
@@ -37,15 +37,15 @@ def LoadPage():
         extremo_a = st.sidebar.number_input(
             'Extremo a:', min_value=0, value=0, format='%d')
         extremo_b = st.sidebar.number_input(
-            'Extremo b:', min_value=0, value=0, format='%d')
+            'Extremo b:', min_value=0, value=1, format='%d')
     elif opcion_seleccionada == 1:
         media = st.sidebar.number_input(
-            'Media μ:', min_value=0.0, value=0.0)
+            'Media μ:', min_value=0.0, value=1.0)
     else:
         media = st.sidebar.number_input(
             'Media μ:', min_value=0.0, value=0.0)
         desviacion_est = st.sidebar.number_input(
-            'Desviación estandar σ:', min_value=0.0, value=0.0)
+            'Desviación estandar σ:', min_value=0.0, value=1.0)
 
     # Opciones del sidebar - Histograma y Chi-cuadrado
     st.sidebar.subheader('📊Opciones del histograma de frecuencias:')
@@ -54,7 +54,7 @@ def LoadPage():
 
     st.sidebar.subheader('📈Opciones de la prueba de Chi-Cuadrado:')
     nivel_significancia = st.sidebar.number_input(
-        'Nivel de Significancia:', min_value=0.0, max_value=1.0)
+        'Nivel de Significancia:', min_value=0.0, max_value=1.0,value=0.05)
 
     gen_ok = st.sidebar.button('Iniciar Simulación')
     if gen_ok:
@@ -73,9 +73,9 @@ def LoadPage():
                     ''')
             elif opcion_seleccionada == 1:
                 serie_numeros = generador.distribucionExponencial(
-                    array_length, media_exp)
-                extremo_a, extremo_b = 0
-                desviacion_est = np.std(serie_numeros, ddof=1)
+                    array_length, media)
+                extremo_a, extremo_b = min(serie_numeros), max(serie_numeros)
+                desviacion_est = np.std(serie_numeros, ddof=array_length-2)
                 st.write('Generación aleatoria utilizando la distribución exponencial.')
                 st.latex(r'''
                     X = \dfrac{-1}{\lambda} * \ln(1-RND)
@@ -85,16 +85,22 @@ def LoadPage():
                     ''')
             else:
                 st.write('Generación aleatoria utilizando la distribución normal.')
+                st.latex(r'''
+                    N1 = [\sqrt{-2 * \ln(RND_1)} * \cos(2 * \pi * RND_2)] * \sigma + \mu
+                    ''')
+                st.latex(r'''
+                    N2 = [\sqrt{-2 * \ln(RND_1)} * \sin(2 * \pi * RND_2)] * \sigma + \mu
+                    ''')
                 serie_numeros = generador.distribucionNormal(array_length, media, desviacion_est)
-                extremo_a, extremo_b = 0
+                extremo_a, extremo_b = min(serie_numeros), max(serie_numeros)
+                
+                
 
-            df_numeros = pd.DataFrame(serie_numeros)
+            df_numeros = pd.DataFrame({"Numeros generados": serie_numeros})
 
             st.write(df_numeros)
-
             resultado, valor_critico, df_tabla, grados_libertad = chiCuadrado.PruebaChiCuadrado(
                 serie_numeros, intervalos, nivel_significancia, opcion_seleccionada, media, desviacion_est, extremo_a, extremo_b)
-
             st.write(histograma.GeneradorHistograma(df_tabla))
 
             st.subheader("📊Prueba Chi Cuadrado")

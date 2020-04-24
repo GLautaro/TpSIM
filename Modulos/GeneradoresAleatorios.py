@@ -19,7 +19,7 @@ def ListaAleatoriaNativa(n, inferior, superior, s=None):
     Retorna list : Lista con los números generados
 '''
 def distribucionExponencial(n, media):
-    valor_lambda=1/media
+    valor_lambda= 1 / media
     return list([Truncate(random.expovariate(valor_lambda), 4) for i in range(n)])
 
 '''La función genera una lista de n números aleatorios con distribución normal usando el método de Box-Muller
