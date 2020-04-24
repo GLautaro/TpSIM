@@ -75,7 +75,7 @@ def LoadPage():
                 serie_numeros = generador.distribucionExponencial(
                     array_length, media)
                 extremo_a, extremo_b = min(serie_numeros), max(serie_numeros)
-                desviacion_est = np.std(serie_numeros, ddof=array_length-2)
+                desviacion_est = np.std(serie_numeros, ddof=array_length)
                 st.write('Generación aleatoria utilizando la distribución exponencial.')
                 st.latex(r'''
                     X = \dfrac{-1}{\lambda} * \ln(1-RND)

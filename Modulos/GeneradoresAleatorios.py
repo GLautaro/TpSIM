@@ -5,7 +5,7 @@ from Modulos.Utils import Truncate
 def ListaAleatoriaNativa(n, inferior, superior, s=None):
     if superior == 1:
         superior = 1.0001
-    if s is not None:
+    if s != 0:
         random.seed(s)
     #La funcion aleatoria se parametriza con el rango [0, 1.00001] para generar numeros aleatorios menores o iguales a uno
     #por algunos decimales, que luego son truncados mediante la funcion
@@ -19,7 +19,7 @@ def ListaAleatoriaNativa(n, inferior, superior, s=None):
     Retorna list : Lista con los números generados
 '''
 def distribucionExponencial(n, media):
-    valor_lambda= 1 / media
+    valor_lambda = 1 / media
     return list([Truncate(random.expovariate(valor_lambda), 4) for i in range(n)])
 
 '''La función genera una lista de n números aleatorios con distribución normal usando el método de Box-Muller

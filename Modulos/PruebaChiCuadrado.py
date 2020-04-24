@@ -29,12 +29,7 @@ def EstadisticoChi2Acumulado(frec_obs, tipoDistribucion,frec_esp=None,):
     '''
     chi2_valores = []
     chi2_acu = 0    
-    if tipoDistribucion == 0:
-        grados_libertad = len(frec_obs) - 1
-    elif tipoDistribucion == 1:
-        grados_libertad = len(frec_obs) - 2
-    elif tipoDistribucion == 2:
-        grados_libertad = len(frec_obs) - 3
+    grados_libertad = len(frec_obs)
     if frec_esp is None:
         val = round(sum(frec_obs) / len(frec_obs), 2)
         frec_esp = list([val for i in range(len(frec_obs))])
