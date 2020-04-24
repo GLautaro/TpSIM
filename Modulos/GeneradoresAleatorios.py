@@ -2,7 +2,9 @@ import random
 import numpy as np
 from Modulos.Utils import Truncate
 
-def ListaAleatoriaNativa(n, superior=1.0001,inferior=0, s=None):
+def ListaAleatoriaNativa(n, inferior, superior, s=None):
+    if superior == 1:
+        superior = 1.0001
     if s is not None:
         random.seed(s)
     #La funcion aleatoria se parametriza con el rango [0, 1.00001] para generar numeros aleatorios menores o iguales a uno
