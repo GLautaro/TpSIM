@@ -116,9 +116,9 @@ def LoadPage():
             st.write(tabla_chi)
 
             if resultado == constantes.ResultadosChi2.H0_NO_RECHAZABLE:
-                st.write("Para un nivel de significancia de " + str(nivel_significancia), "y un valor crítico de: " + str(valor_critico), ". La prueba de Chi Cuadrado considera la Hipotesis Nula como No Rechazable")
+                st.write("Para un nivel de confianza de " + str(1-nivel_significancia), "y grados de libertad " + str(grados_libertad), " se obtiene un valor crítico de: " + str(valor_critico),".",  "La prueba de Chi Cuadrado considera la Hipotesis Nula como No Rechazable")
             else:
-                st.write("Para un nivel de significancia de " + str(nivel_significancia), "y un valor crítico de: " + str(valor_critico), " .La prueba de Chi Cuadrado considera la Hipotesis Nula como Rechazada")
+                st.write("Para un nivel de confianza de " + str(1-nivel_significancia), "y grados de libertad " + str(grados_libertad), " se obtiene un valor crítico de: " + str(valor_critico),".",  "La prueba de Chi Cuadrado considera la Hipotesis Nula como Rechazada")
 
 
             if exportar_como_excel:
