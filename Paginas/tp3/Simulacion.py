@@ -35,9 +35,9 @@ def LoadPage():
         semilla = st.sidebar.number_input(
             'Semilla (X0):', min_value=0, value=0, format='%d')
         extremo_a = st.sidebar.number_input(
-            'Extremo a:', min_value=0, value=0, format='%d')
+            'Extremo a:', value=0, format='%d')
         extremo_b = st.sidebar.number_input(
-            'Extremo b:', min_value=0, value=1, format='%d')
+            'Extremo b:', value=1, format='%d')
     elif opcion_seleccionada == 1:
         media = st.sidebar.number_input(
             'Media μ:', min_value=0.0, value=1.0)
