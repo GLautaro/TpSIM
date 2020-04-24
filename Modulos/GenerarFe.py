@@ -30,8 +30,8 @@ def ProbabilidadAcumuladaExponencial(desde, hasta, valor_lambda):
                    valor_lambda: valor del lambda calculado para la serie'''
     return FuncionAcumuladaExponencial(hasta, valor_lambda) - FuncionAcumuladaExponencial(desde, valor_lambda)
 
-def ProbabilidadAcumuladaNormal(desde, hasta, a, b):
-    '''La función devuelve el valor de la probabilidad acumulada para la distribución Exponencial
+def ProbabilidadAcumuladaUniforme(desde, hasta, a, b):
+    '''La función devuelve el valor de la probabilidad acumulada para la distribución uniforme
         Parámetros: desde: valor inicial del intervalo
                     hasta: valor final del intervalo
                     a: extremo superior
@@ -57,14 +57,14 @@ def FrecuenciasEsperadas(tamaño_muestra, intervalos, tipoDistribucion, media, d
         desde, hasta = intervalo[0], intervalo[1]
 
         if tipoDistribucion == 0:
-          prob = ProbabilidadAcumuladaNormal(desde, hasta, a, b)
+            prob = ProbabilidadAcumuladaUniforme(desde, hasta, a, b)
 
         elif tipoDistribucion == 1:
-          prob = ProbabilidadAcumuladaExponencial(desde, hasta, valor_lambda)
+            prob = ProbabilidadAcumuladaExponencial(desde, hasta, valor_lambda)
         
         elif tipoDistribucion == 2:
-          marca_clase = (desde+hasta)/2
-          prob = FuncionDensidadNormal(marca_clase, media, desviacion_estandar)*(hasta-desde)
+            marca_clase = (desde+hasta)/2
+            prob = FuncionDensidadNormal(marca_clase, media, desviacion_estandar)*(hasta-desde)
         
         frec_esp = Truncate(prob*tamaño_muestra, 4)
         
