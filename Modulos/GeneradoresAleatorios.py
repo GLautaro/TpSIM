@@ -22,6 +22,13 @@ def distribucionExponencial(n, media):
     valor_lambda=1/media
     return list([Truncate(random.expovariate(valor_lambda), 4) for i in range(n)])
 
+'''La función genera una lista de n números aleatorios con distribución normal usando el método de Box-Muller
+    Parámetros: n: tamaño de la muestra, mu: media, sigma: desviación estándar
+    Retorna list: lista con los números generados
+'''
+def distribucionNormal(n, mu, sigma):
+    return list([Truncate(random.gauss(mu, sigma),4) for i in range(n)])
+
 def ListaAleatoriaCongruencialLineal(n,x,k,g,c):
     numeros_generados = []
     a = 1 + 4*k
