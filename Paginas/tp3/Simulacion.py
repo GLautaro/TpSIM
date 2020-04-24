@@ -9,6 +9,7 @@ import os
 # Importacion de modulos de terceros
 import streamlit as st
 import pandas as pd
+import numpy as np
 
 
 def LoadPage():
@@ -63,6 +64,8 @@ def LoadPage():
             if opcion_seleccionada == 0:
                 serie_numeros = generador.ListaAleatoriaNativa(
                     array_length, extremo_a, extremo_b, semilla)
+                media = (extremo_b - extremo_a) / 2
+                desviacion_est = np.std(serie_numeros, ddof=1)
                 st.write(
                     'Generación aleatoria utilizando la distribución uniforme [a, b].')
                 st.latex(r'''
@@ -71,6 +74,8 @@ def LoadPage():
             elif opcion_seleccionada == 1:
                 serie_numeros = generador.distribucionExponencial(
                     array_length, media_exp)
+                extremo_a, extremo_b = 0
+                desviacion_est = np.std(serie_numeros, ddof=1)
                 st.write('Generación aleatoria utilizando la distribución exponencial.')
                 st.latex(r'''
                     X = \dfrac{-1}{\lambda} * \ln(1-RND)
@@ -80,6 +85,8 @@ def LoadPage():
                     ''')
             else:
                 st.write('Generación aleatoria utilizando la distribución normal.')
+                serie_numeros = generador.distribucionNormal(array_length, media, desviacion_est)
+                extremo_a, extremo_b = 0
 
             df_numeros = pd.DataFrame(serie_numeros)
 
