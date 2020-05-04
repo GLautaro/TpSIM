@@ -6,7 +6,7 @@ import pandas as pd
 
 def LoadPage():
     st.title('🔢Simulación de Montecarlo🔢')
-    st.markdown('Simulación - Trabajo Práctico de Laboratorio 3')
+    st.markdown('Simulación - Trabajo Práctico de Laboratorio 4')
     st.write('Se desarrollo esta aplicación que permite generar una simulación de un sistema utilizando la simulación de Montecarlo.')
     for i in range(2):
         st.write('')
@@ -17,7 +17,7 @@ def LoadPage():
     st.write(
         'Si selecciona "Simular" usted podra realizar la simulación y modificar los parametros de la misma')
 
-    st.header('💬Ejercicio 24: Bowling.')
+    st.header('🎳Ejercicio 24: Bowling.')
     st.write(
         'Un jugador de bowling tiene la siguiente distribución de probabilidad para el número de pinos tirados por la primera bola:')
     
@@ -25,6 +25,7 @@ def LoadPage():
             'Probabilidad (%)': [12, 15, 18, 55]}
 
     df = pd.DataFrame(primera_bola, columns = ['Número de pinos','Probabilidad (%)'])
+    df = df.style.applymap(color_negative_red, subset=pd.IndexSlice[:, ['Probabilidad (%)']])
     st.write(df)
 
     st.write('Las distribuciones de probabilidad para el número de pinos de la segunda bola son:')
@@ -34,8 +35,22 @@ def LoadPage():
                     'Probabilidad (%)': [2, 10, 45, 43, 4, 20, 76, 6, 94]}
 
     df2 = pd.DataFrame(segunda_bola, columns = ['Pinos de la primera bola', 'Pinos de la segunda bola', 'Probabilidad (%)'])
+    df2 = df2.style.applymap(color_negative_red, subset=pd.IndexSlice[:, ['Probabilidad (%)']])
     st.write(df2)
 
-    st.write('Si tirar 10 pinos con el primer tiro significa 20 puntos, tirar 10 pinos con los dos tiros 15 puntos y en el resto de los casos se cuenta como puntaje el total de pinos tirados. Determinar la probabilidad de que en 10 rondas el jugador obtenga más de 120 puntos.')
+    st.write('Si tira 10 pinos con el primer tiro significa 20 puntos, tirar 10 pinos con los dos' 
+            'tiros 15 puntos y en el resto de los casos se cuenta como puntaje el total de pinos tirados.'
+             'Determinar la probabilidad de que en 10 rondas el jugador obtenga más de 120 puntos.')
+
+    st.markdown('Estos datos son a modo de ejemplo, las probabilidades (marcadas con rojo) son parametrizables.')
 
 
+
+def color_negative_red(val):
+    """
+    Takes a scalar and returns a string with
+    the css property `'color: red'` for negative
+    strings, black otherwise.
+    """
+    color = 'red'
+    return 'color: %s' % color
