@@ -38,12 +38,22 @@ def LoadPage():
                         bola2_8_0pinos, bola2_8_1pinos, bola2_8_2pinos,
                         bola2_9_0pinos, bola2_9_1pinos]
     
+    st.subheader('🎳Puntajes')
+    puntaje_1 = st.number_input('Puntaje de tirar 10 pinos en el primer tiro', min_value=0, value=10)
+    puntaje_2 = st.number_input('Puntaje de tirar 10 pinos entre los dos tiros', min_value=0, value=15)
+
+    st.subheader('🎳Rondas')
+    n_rondas = st.number_input('Rondas', min_value=0, value=10)
+    
+    puntaje_minimo_ronda = st.number_input('Puntaje mínimo por ronda', min_value=0, value=120)
+
+
     sim_ok = st.button('✅Iniciar Simulación')
     if sim_ok:
-        LoadSimulacion(vector_primera_bola, vector_segunda_bola)
+        LoadSimulacion(vector_primera_bola, vector_segunda_bola, puntaje_1, puntaje_2, n_rondas, puntaje_minimo_ronda)
 
 
-def LoadSimulacion(v1, v2):
+def LoadSimulacion(v1, v2, puntaje_1, puntaje_2, n_rondas, puntaje_minimo_ronda):
     st.write(
         'Un jugador de bowling tiene la siguiente distribución de probabilidad para el número de pinos tirados por la primera bola:')
     
@@ -58,6 +68,8 @@ def LoadSimulacion(v1, v2):
                     'Probabilidad (%)': v2}
     df2 = pd.DataFrame(segunda_bola, columns = ['Pinos de la primera bola', 'Pinos de la segunda bola', 'Probabilidad (%)'])
     st.write(df2)
+
+    
 
 
 
