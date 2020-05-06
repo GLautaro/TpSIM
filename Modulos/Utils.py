@@ -12,3 +12,6 @@ def GenerarExcel(dict_dataframes, nombre_archivo):
         for r in dataframe_to_rows(df, index=False, header=True):
             ws.append(r)
     wb.save(nombre_archivo)
+
+def ValidarVectorProbabilidades(vector):
+    return (sum(vector) == 1)
