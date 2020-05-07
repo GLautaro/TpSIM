@@ -9,10 +9,9 @@ def CrearIntervalos(prob):
     intervalos = []
     for i in range(len(prob_acumuladas) - 1):
         intervalos.append(str(prob_acumuladas[i]) + " - " + str(prob_acumuladas[i + 1]))
-    print(intervalos)
     return intervalos
 
-def CalcularPinosPrimeraTirada(prob, nro_aleatorio):
+def CalcularPinosTirada(prob, nro_aleatorio, primera_tirada = True):
     len_lista = len(prob)
     nro_aleatorio = nro_aleatorio * 100
     indice = 0
@@ -25,7 +24,20 @@ def CalcularPinosPrimeraTirada(prob, nro_aleatorio):
             indice = i
             break
 
-    return indice + 7
+    return indice + 7 if primera_tirada else indice
 
+""" 
 def CalcularPinosSegundaTirada(probabilidades,nro_aleatorio,pinos_primera):
-    pass
+    len_lista = len(probabilidades)
+    nro_aleatorio = nro_aleatorio * 100
+    indice = 0
+    for i in range(len_lista - 1):
+        if i == len_lista - 2:
+            if nro_aleatorio >= prob[i] and nro_aleatorio <= prob[i + 1]:
+            indice = i
+            break
+        if nro_aleatorio >= probabilidades[i] and nro_aleatorio < probabilidades[i + 1]:
+            indice = 1
+            break
+
+    return indice """

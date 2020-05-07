@@ -2,6 +2,8 @@ from Modulos import TablasProbabilidad as tablas
 from Modulos.Utils import Truncate
 import pandas as pd
 import random 
+
+
 def SimulacionBowling(vector_primera_bola,
                       vector_segunda_bola_7,
                       vector_segunda_bola_8,
@@ -26,7 +28,7 @@ def SimulacionBowling(vector_primera_bola,
 
             puntaje = 0
             ran = Truncate(random.uniform(0,1.00001), 4)
-            cant_pinos = tablas.CalcularPinosPrimeraTirada(int_pr, ran)
+            cant_pinos = tablas.CalcularPinosTirada(int_pr, ran)
 
 
             if puntaje >= puntaje_objetivo:
