@@ -1,5 +1,5 @@
-import TablasProbabilidad as tablas
-from Utils import Truncate, CrearDataFrame
+from Modulos.Utils import Truncate, CrearDataFrame
+import Modulos.TablasProbabilidad as tablas
 import pandas as pd
 import random 
 import os
@@ -28,12 +28,13 @@ def SimulacionBowling(vector_primera_bola,
             rand_tirada_1 = Truncate(random.uniform(0, 1.00001), 4)
             cant_pinos = tablas.CalcularPinosTirada(int_pr, rand_tirada_1)
             rand_tirada_2 = Truncate(random.uniform(0, 1.00001), 4)
+            cant_pinos_seg = 0
             if(cant_pinos == 7):                
-                 cant_pinos_seg = tablas.CalcularPinosTirada(int_seg_7, rand_tirada_2, primera_tirada=False)
-            elif(cant_pinos==8):
+                cant_pinos_seg = tablas.CalcularPinosTirada(int_seg_7, rand_tirada_2, primera_tirada=False)
+            elif(cant_pinos == 8):
                 cant_pinos_seg = tablas.CalcularPinosTirada(int_seg_8, rand_tirada_2, primera_tirada=False)
-            else:
-                 cant_pinos_seg = tablas.CalcularPinosTirada(int_seg_9, rand_tirada_2, primera_tirada=False)
+            elif(cant_pinos == 9):
+                cant_pinos_seg = tablas.CalcularPinosTirada(int_seg_9, rand_tirada_2, primera_tirada=False)
 
             if(cant_pinos == 10):
                 puntajeRonda = punt_10_prim

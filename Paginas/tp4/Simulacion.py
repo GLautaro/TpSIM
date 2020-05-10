@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 import Modulos.TablasProbabilidad as tablas
+import Modulos.SimulacionMontecarlo as montecarlo
 
 def LoadPage():
     st.title('🔢Simulación de Montecarlo - Bowling')
@@ -43,19 +44,29 @@ def LoadPage():
     puntaje_1 = st.number_input('Puntaje de tirar 10 pinos en el primer tiro', min_value=0, value=10)
     puntaje_2 = st.number_input('Puntaje de tirar 10 pinos entre los dos tiros', min_value=0, value=15)
 
-    st.subheader('🎳Rondas')
-    n_rondas = st.number_input('Rondas', min_value=0, value=10)
-    
+    st.subheader('🎳Rondas e iteraciones')
+
+    n_iteraciones = st.number_input('Cantidad de iteraciones', min_value=1, value=10)
+    n_rondas = st.number_input('Rondas', min_value=0, value=10)    
     puntaje_minimo_ronda = st.number_input('Puntaje mínimo por ronda', min_value=0, value=120)
+
+    st.subheader('👀Opciones de la visualización')
+
+    mostrar_ronda_desde = st.number_input('Mostrar desde la ronda...', min_value=1, max_value=n_rondas ,value=1)
+    mostrar_cantidad_rondas = st.number_input('Cantidad de rondas a mostrar', min_value=1, max_value=(n_rondas - mostrar_ronda_desde), value=1)
+    mostrar_iteracion_desde = st.number_input('Mostrar desde la iteracion...', min_value=1, max_value=n_iteraciones, value=1)
+    mostrar_cantidad_iteracion = st.number_input('Cantidad de iteraciones a mostrar', min_value=1, max_value=(n_iteraciones - mostrar_iteracion_desde), value=1)
+
     vector_segunda_bola = vector_segunda_bola_7 + vector_segunda_bola_8 + vector_segunda_bola_9
 
     sim_ok = st.button('✅Iniciar Simulación')
     if sim_ok:
 
-        LoadSimulacion(vector_primera_bola, vector_segunda_bola, puntaje_1, puntaje_2, n_rondas, puntaje_minimo_ronda)
+        data_simulacion = montecarlo.SimulacionBowling(vector_primera_bola, vector_segunda_bola_7, vector_segunda_bola_8, vector_segunda_bola_9, n_iteraciones, n_rondas, puntaje_minimo_ronda, puntaje_1, puntaje_2, mostrar_ronda_desde, mostrar_cantidad_rondas, mostrar_iteracion_desde, mostrar_cantidad_iteracion)
+        LoadSimulacion(vector_primera_bola, vector_segunda_bola, puntaje_1, puntaje_2, n_rondas, puntaje_minimo_ronda, data_simulacion)
 
 
-def LoadSimulacion(v1, v2, puntaje_1, puntaje_2, n_rondas, puntaje_minimo_ronda):
+def LoadSimulacion(v1, v2, puntaje_1, puntaje_2, n_rondas, puntaje_minimo_ronda, data_simulacion):
     st.write(
         'Un jugador de bowling tiene la siguiente distribución de probabilidad para el número de pinos tirados por la primera bola:')
     
@@ -77,6 +88,9 @@ def LoadSimulacion(v1, v2, puntaje_1, puntaje_2, n_rondas, puntaje_minimo_ronda)
                     }
     df2 = pd.DataFrame(segunda_bola, columns = ['Pinos de la primera bola', 'Pinos de la segunda bola', 'Probabilidad (%)','Probabilidad acumuladas'])
     st.write(df2)
+
+    st.write('Resultados de la simulación')
+    st.write(data_simulacion)
 
     
 
