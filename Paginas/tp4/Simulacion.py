@@ -69,9 +69,6 @@ def LoadSimulacion(v1, v2, puntaje_1, puntaje_2, n_rondas, puntaje_minimo_ronda)
     acumulado_7 = tablas.CrearIntervalos(v2[0:4])
     acumulado_8 = tablas.CrearIntervalos(v2[4:7])
     acumulado_9 = tablas.CrearIntervalos(v2[7:9])
-    st.write(acumulado_7)
-    st.write(acumulado_8)
-    st.write(acumulado_9)
     st.write('Las distribuciones de probabilidad para el número de pinos de la segunda bola son:')
     segunda_bola = {'Pinos de la primera bola': [7, 7, 7, 7, 8, 8, 8, 9, 9],
                     'Pinos de la segunda bola': [0, 1, 2, 3, 0, 1, 2, 0, 1],
