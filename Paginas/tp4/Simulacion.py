@@ -5,6 +5,8 @@ import numpy as np
 import plotly.graph_objects as go
 import Modulos.TablasProbabilidad as tablas
 import Modulos.SimulacionMontecarlo as montecarlo
+import os
+import Modulos.Utils as u
 
 def LoadPage():
     st.title('🔢Simulación de Montecarlo - Bowling')
@@ -91,6 +93,10 @@ def LoadSimulacion(v1, v2, puntaje_1, puntaje_2, n_rondas, puntaje_minimo_ronda,
 
     st.write('Resultados de la simulación')
     st.write(data_simulacion)
+    
+    nom = "file.xlsx"
+    u.GenerarExcel({"Simulacion":data_simulacion},nom)
+    os.startfile(nom)
 
     
 

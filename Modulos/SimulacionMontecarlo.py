@@ -1,4 +1,4 @@
-from Modulos.Utils import Truncate, CrearDataFrame
+from Modulos.Utils import Truncate, CrearDataFrame, GenerarExcel
 import Modulos.TablasProbabilidad as tablas
 import pandas as pd
 import random 
@@ -56,7 +56,7 @@ def SimulacionBowling(vector_primera_bola,
             cant_exitos += 1
     
     probabilidad_exito = cant_exitos / it
-    return CrearDataFrame(mostrar_ronda_cantidad + 1, mostrar_ronda_desde, iteraciones, ron)
+    return CrearDataFrame(mostrar_ronda_cantidad, mostrar_ronda_desde, iteraciones, ron)
 
 def testSimulacionMonte():
     import os
