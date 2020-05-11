@@ -56,7 +56,7 @@ def SimulacionBowling(vector_primera_bola,
             cant_exitos += 1
     
     probabilidad_exito = cant_exitos / it
-    return CrearDataFrame(mostrar_ronda_cantidad + 1 if ron - mostrar_ronda_desde - mostrar_ronda_cantidad == 0 else mostrar_ronda_cantidad, mostrar_ronda_desde, iteraciones, ron)
+    return CrearDataFrame(mostrar_ronda_cantidad + 1 if ron - mostrar_ronda_desde - mostrar_ronda_cantidad == 0 else mostrar_ronda_cantidad, mostrar_ronda_desde, iteraciones, ron, probabilidad_exito)
 
 def testSimulacionMonte():
     import os
