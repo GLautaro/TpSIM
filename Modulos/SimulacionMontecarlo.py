@@ -56,18 +56,18 @@ def SimulacionBowling(vector_primera_bola,
             cant_exitos += 1
     
     probabilidad_exito = cant_exitos / it
-    return CrearDataFrame(mostrar_ronda_cantidad, mostrar_ronda_desde, iteraciones, ron, probabilidad_exito)
+    return CrearDataFrame(mostrar_ronda_cantidad + 1 if ron - mostrar_ronda_desde - mostrar_ronda_cantidad == 0 else mostrar_ronda_cantidad, mostrar_ronda_desde, iteraciones, ron)
 
 def testSimulacionMonte():
     import os
-    import Utils as u
+    import Modulos.Utils as u
     sim = SimulacionBowling([12,15,18,55],
                      [2,10,45,43],
                       [4,26,76],
                       [6,94],
                       5,10,
                       120, 20,15,
-                      3,1,
+                      1,9, #Rondas desde/cantidad
                       3,1
                       )
     nom = "file.xlsx"
