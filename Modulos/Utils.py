@@ -17,7 +17,7 @@ def GenerarExcel(dict_dataframes, nombre_archivo):
 def ValidarVectorProbabilidades(vector):
     return (sum(vector) == 1)
 
-def CrearDataFrame(cant_rondas, desde, datos, ultima_ronda, probabilidad_exito):
+def CrearDataFrame(cant_rondas, desde, datos, ultima_ronda):
     
     col = ["Iteracion","Resultado"]
     for i in range(cant_rondas):
@@ -44,6 +44,6 @@ def CrearDataFrame(cant_rondas, desde, datos, ultima_ronda, probabilidad_exito):
     print(datos[0])
     print(col)    
     df = pd.DataFrame(np.array(datos), columns=col)
-    return df, probabilidad_exito
+    return df
 
     
