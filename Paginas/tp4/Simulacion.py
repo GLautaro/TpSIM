@@ -8,6 +8,14 @@ import Modulos.SimulacionMontecarlo as montecarlo
 import os
 import Modulos.Utils as u
 
+def validarProbabilidades(vector):
+    prob = 0
+    for i in range (len(vector)):
+        prob+= vector[i]
+    if prob == 1:
+      return True
+    return False
+
 def LoadPage():
     st.title('🔢Simulación de Montecarlo - Bowling')
     st.markdown('Ingrese los parametros requeridos y luego pulse "Iniciar Simulación" para comenzar con la simulación.')
@@ -20,6 +28,7 @@ def LoadPage():
     bola1_10pinos = st.number_input('Probabilidad de tirar 10 pinos (%):', min_value=0.0, max_value=100.0, value=55.0)
     st.write('')
     vector_primera_bola = [bola1_7pinos, bola1_8pinos, bola1_9pinos, bola1_10pinos]
+    vector_primera_bola_ok = validarProbabilidades(vector_primera_bola)
 
     #Probabilidades de la segunda bola. Genera el segundo vector de probabilidades
     st.subheader('📊Probabilidades de la Segunda bola:')
@@ -41,6 +50,10 @@ def LoadPage():
     vector_segunda_bola_7 = [bola2_7_0pinos, bola2_7_1pinos, bola2_7_2pinos, bola2_7_3pinos] 
     vector_segunda_bola_8 = [bola2_8_0pinos, bola2_8_1pinos, bola2_8_2pinos]
     vector_segunda_bola_9 = [bola2_9_0pinos, bola2_9_1pinos]
+
+    vector_segunda_bola_7_ok = validarProbabilidades(vector_segunda_bola_7)
+    vector_segunda_bola_8_ok = validarProbabilidades(vector_segunda_bola_8)
+    vector_segunda_bola_9_ok = validarProbabilidades(vector_segunda_bola_9)
     
     st.subheader('🎳Puntajes')
     puntaje_1 = st.number_input('Puntaje de tirar 10 pinos en el primer tiro', min_value=0, value=10)
@@ -63,12 +76,15 @@ def LoadPage():
 
     sim_ok = st.button('✅Iniciar Simulación')
     if sim_ok:
-
-        data_simulacion = montecarlo.SimulacionBowling(vector_primera_bola, vector_segunda_bola_7, vector_segunda_bola_8, vector_segunda_bola_9, n_iteraciones, n_rondas, puntaje_minimo_ronda, puntaje_1, puntaje_2, mostrar_ronda_desde, mostrar_cantidad_rondas, mostrar_iteracion_desde, mostrar_cantidad_iteracion)
-        LoadSimulacion(vector_primera_bola, vector_segunda_bola, puntaje_1, puntaje_2, n_rondas, puntaje_minimo_ronda, data_simulacion)
+        if vector_primera_bola_ok == True and vector_segunda_bola_7_ok == True and vector_segunda_bola_8_ok == True and vector_segunda_bola_9_ok == True:
+            data_simulacion = montecarlo.SimulacionBowling(vector_primera_bola, vector_segunda_bola_7, vector_segunda_bola_8, vector_segunda_bola_9, n_iteraciones, n_rondas, puntaje_minimo_ronda, puntaje_1, puntaje_2, mostrar_ronda_desde, mostrar_cantidad_rondas, mostrar_iteracion_desde, mostrar_cantidad_iteracion)
+            LoadSimulacion(vector_primera_bola, vector_segunda_bola, puntaje_1, puntaje_2, n_rondas, puntaje_minimo_ronda, data_simulacion)
+        else:
+            st.write("Verifique las probabilidades.")
 
 
 def LoadSimulacion(v1, v2, puntaje_1, puntaje_2, n_rondas, puntaje_minimo_ronda, data_simulacion):
+    
     st.write(
         'Un jugador de bowling tiene la siguiente distribución de probabilidad para el número de pinos tirados por la primera bola:')
     
