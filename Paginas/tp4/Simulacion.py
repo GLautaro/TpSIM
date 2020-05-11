@@ -68,9 +68,9 @@ def LoadPage():
     st.subheader('👀Opciones de la visualización')
 
     mostrar_ronda_desde = st.number_input('Mostrar desde la ronda...', min_value=1, max_value=n_rondas ,value=1)
-    mostrar_cantidad_rondas = st.number_input('Cantidad de rondas a mostrar', min_value=1, max_value=(n_rondas - mostrar_ronda_desde), value=1)
+    mostrar_cantidad_rondas = st.number_input('Cantidad de rondas a mostrar', min_value=1, max_value=n_rondas if mostrar_ronda_desde == 1 else (n_rondas - mostrar_ronda_desde), value=10)    
     mostrar_iteracion_desde = st.number_input('Mostrar desde la iteracion...', min_value=1, max_value=n_iteraciones, value=1)
-    mostrar_cantidad_iteracion = st.number_input('Cantidad de iteraciones a mostrar', min_value=1, max_value=(n_iteraciones - mostrar_iteracion_desde), value=1)
+    mostrar_cantidad_iteracion = st.number_input('Cantidad de iteraciones a mostrar', min_value=1, max_value=n_iteraciones if mostrar_iteracion_desde == 1 else (n_iteraciones - mostrar_iteracion_desde), value=10)
 
     vector_segunda_bola = vector_segunda_bola_7 + vector_segunda_bola_8 + vector_segunda_bola_9
 
