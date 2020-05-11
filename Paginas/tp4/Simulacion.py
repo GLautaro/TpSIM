@@ -78,8 +78,9 @@ def LoadPage():
     
     if sim_ok:
         if vector_primera_bola_ok == True and vector_segunda_bola_7_ok == True and vector_segunda_bola_8_ok == True and vector_segunda_bola_9_ok == True:
-            data_simulacion = montecarlo.SimulacionBowling(vector_primera_bola, vector_segunda_bola_7, vector_segunda_bola_8, vector_segunda_bola_9, n_iteraciones, n_rondas, puntaje_minimo_ronda, puntaje_1, puntaje_2, mostrar_ronda_desde, mostrar_cantidad_rondas, mostrar_iteracion_desde, mostrar_cantidad_iteracion)
+            data_simulacion, probabilidad_exito = montecarlo.SimulacionBowling(vector_primera_bola, vector_segunda_bola_7, vector_segunda_bola_8, vector_segunda_bola_9, n_iteraciones, n_rondas, puntaje_minimo_ronda, puntaje_1, puntaje_2, mostrar_ronda_desde, mostrar_cantidad_rondas, mostrar_iteracion_desde, mostrar_cantidad_iteracion)
             LoadSimulacion(vector_primera_bola, vector_segunda_bola, puntaje_1, puntaje_2, n_rondas, puntaje_minimo_ronda, data_simulacion)
+            st.write("La probabilidad de éxito es: ", probabilidad_exito)
         else:
             st.write("Verifique las probabilidades.")
 

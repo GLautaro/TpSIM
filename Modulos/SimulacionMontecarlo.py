@@ -22,7 +22,7 @@ def SimulacionBowling(vector_primera_bola,
     iteraciones = []
     for i in range(it):
         puntajeTotal = 0
-        ronda_datos = [str(i + 1), "f"]
+        ronda_datos = [str(i + 1), "Falló"]
         for j in range(ron):
             puntajeRonda = 0
             rand_tirada_1 = Truncate(random.uniform(0, 1.00001), 4)
@@ -49,14 +49,14 @@ def SimulacionBowling(vector_primera_bola,
 
         if (i + 1) >= mostrar_iteracion_desde and (i + 1) - mostrar_iteracion_desde < mostrar_iteracion_cantidad or (i + 1) == it:
             if puntajeTotal >= puntaje_objetivo:
-                ronda_datos[1] = "e"
+                ronda_datos[1] = "Éxito"
             iteraciones.append(ronda_datos)
          
         if puntajeTotal >= puntaje_objetivo:
             cant_exitos += 1
     
     probabilidad_exito = cant_exitos / it
-    return CrearDataFrame(mostrar_ronda_cantidad, mostrar_ronda_desde, iteraciones, ron)
+    return CrearDataFrame(mostrar_ronda_cantidad, mostrar_ronda_desde, iteraciones, ron, probabilidad_exito)
 
 def testSimulacionMonte():
     import os
