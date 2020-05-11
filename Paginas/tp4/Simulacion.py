@@ -12,7 +12,7 @@ def validarProbabilidades(vector):
     prob = 0
     for i in range (len(vector)):
         prob+= vector[i]
-    if prob == 1:
+    if prob == 100:
       return True
     return False
 
@@ -75,6 +75,7 @@ def LoadPage():
     vector_segunda_bola = vector_segunda_bola_7 + vector_segunda_bola_8 + vector_segunda_bola_9
 
     sim_ok = st.button('✅Iniciar Simulación')
+    
     if sim_ok:
         if vector_primera_bola_ok == True and vector_segunda_bola_7_ok == True and vector_segunda_bola_8_ok == True and vector_segunda_bola_9_ok == True:
             data_simulacion = montecarlo.SimulacionBowling(vector_primera_bola, vector_segunda_bola_7, vector_segunda_bola_8, vector_segunda_bola_9, n_iteraciones, n_rondas, puntaje_minimo_ronda, puntaje_1, puntaje_2, mostrar_ronda_desde, mostrar_cantidad_rondas, mostrar_iteracion_desde, mostrar_cantidad_iteracion)
