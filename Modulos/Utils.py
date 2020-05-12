@@ -19,7 +19,7 @@ def ValidarVectorProbabilidades(vector):
 
 def CrearDataFrame(cant_rondas, desde, datos, ultima_ronda):
     
-    col = ["Iteracion","Resultado"]
+    col = ["Iteracion","Resultado","CantidadExitos"]
     for i in range(cant_rondas):
         num = str(i + desde)
         t1 = "ronda" + num + "_tirada1"
@@ -39,10 +39,7 @@ def CrearDataFrame(cant_rondas, desde, datos, ultima_ronda):
         rand_t2 = "rand_" + t2
         ac_rond = "ronda_" + ultima_ronda + "_punt_ac"
         ac_total= "ronda_" + ultima_ronda + "_punt_total"
-        col = col + [ran_t1, t1, rand_t2, t2, ac_total, ac_rond]
-    
-    print(datos[0])
-    print(col)    
+        col = col + [ran_t1, t1, rand_t2, t2, ac_total, ac_rond]  
     df = pd.DataFrame(np.array(datos), columns=col)
     return df
 
