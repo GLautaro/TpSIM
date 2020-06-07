@@ -45,4 +45,4 @@ def LoadPage():
 
 def Simular():
     ## TODO: Agregar funciones de simulación.
-
+    pass
