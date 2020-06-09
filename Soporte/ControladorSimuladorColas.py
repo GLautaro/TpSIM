@@ -26,21 +26,26 @@ class Controlador:
         self.eventos = []
         self.alumnos = []
         self.array_fin_inscripcion = [0, 0, 0, 0, 0]
+        self.maquina1 = Maquina(0, "LIBRE", 0)
+        self.maquina2 = Maquina(1, "LIBRE", 0)
+        self.maquina3 = Maquina(2, "LIBRE", 0)
+        self.maquina4 = Maquina(3, "LIBRE", 0)
+        self.maquina5 = Maquina(4, "LIBRE", 0)
     
     def buscarMaquinaLibre(self):
         '''
         La función devuelve la primer máquina que encuentra en estado LIBRE 
         '''
-        if maquina1.estado == 'LIBRE':
-          return maquina1
-        elif maquina2.estado == 'LIBRE':
-          return maquina2
-        elif maquina3.estado == 'LIBRE':
-          return maquina3
-        elif maquina4.estado == 'LIBRE':
-          return maquina4
-        elif maquina5.estado == 'LIBRE':
-          return maquina5
+        if self.maquina1.estado == 'LIBRE':
+          return self.maquina1
+        elif self.maquina2.estado == 'LIBRE':
+          return self.maquina2
+        elif self.maquina3.estado == 'LIBRE':
+          return self.maquina3
+        elif self.maquina4.estado == 'LIBRE':
+          return self.maquina4
+        elif self.maquina5.estado == 'LIBRE':
+          return self.maquina5
         else:
           return None
     
@@ -48,13 +53,13 @@ class Controlador:
         '''
         La función realiza las operaciones necesarias para el evento del tipo Llegada Alumno 
         '''
-        llegada_alumno = LlegadaAlumno()
+        llegada_alumno = LlegadaAlumno(self.reloj, self.media_demora_insc)
         self.eventos.append(llegada_alumno)
         self.acum_alumnos_llegaron+=1  
         if len(self.cola) <= 4: # ¿Hay menos de 4 alumnos en la cola?
             maquina = self.buscarMaquinaLibre() # ¿Hay alguna máquina libre?
             if maquina != None: #Si hay algún servidor libre 
-                fin_inscripcion = FinInscripcion(maquina)
+                fin_inscripcion = FinInscripcion(maquina,self.reloj,self.a_insc,self.b_insc)
                 maquina.estado = "SIENDO_UTILIZADO"
                 self.array_fin_inscripcion[maquina.id_maquina] = fin_inscripcion.hora
                 maquina.acum_tiempo_inscripcion+= fin_inscripcion.duracion
@@ -63,13 +68,13 @@ class Controlador:
                 print("Alumno ingresa a la cola")
                 alumno = Alumno(None, "ESPERANDO_INS")
                 self.cola.append(alumno)
-                fin_inscripcion = self.eventos[len(self.eventos) - 2] #Repetir fin insc fila anterior
+                fin_inscripcion = self.eventos[len(self.eventos) - 1] #Repetir fin insc fila anterior
             self.alumnos.append(alumno)
         else:  #Si hay más de 4 alumnos en la cola
             print("Alumno se retira")
             self.acum_alumnos_retiran+=1
-            fin_inscripcion = self.eventos[len(self.eventos) - 2] #Repetir fin insc fila anterior
-        self.eventos.append(fin_inscripcion) 
+            fin_inscripcion = self.eventos[len(self.eventos) - 1] #Repetir fin insc fila anterior
+        self.eventos.append(fin_inscripcion)
     
     def manejarFinInscripcion(self, evento_actual):
         '''
@@ -79,26 +84,27 @@ class Controlador:
         self.eventos.append(llegada_alumno)
         maquina = evento_actual.Maquina
         alumno_finalizado = self.buscarAlumno(maquina)
-        alumno_finalizado.maquina, alumno_finalizado.estado = None, "-"
+        alumno_finalizado.maquina = None
+        alumno_finalizado.estado = "FINALIZADO"
         if len(self.cola) > 1:
-            self.cola.pop(0)
-            fin_inscripcion = FinInscripcion(maquina)
-            self.eventos.append(fin_inscripcion)
+            alumno = self.cola.pop(0)
+            fin_inscripcion = FinInscripcion(maquina,self.reloj,self.a_insc,self.b_insc)
             self.array_fin_inscripcion[maquina.id_maquina] = fin_inscripcion.hora
             maquina.acum_tiempo_inscripcion+= fin_inscripcion.duracion
-            alumno = self.cola[0]
             alumno.estado, alumno.maquina, maquina.estado = "SIENDO_INS", maquina, "SIENDO_UTILIZADO"
             self.alumnos.append(alumno)
         else:
             maquina.estado = "LIBRE"
             self.array_fin_inscripcion[maquina.id_maquina] = 0
+            fin_inscripcion = self.eventos[len(self.eventos) - 1]
+        self.eventos.append(fin_inscripcion)
 
     def buscarAlumno(self, maquina):
         '''
         La función recibe como parámetro un objeto máquina y retorna el alumno que tiene como atributo ese objeto. 
         '''
         for i in range(len(self.alumnos)):
-          if self.alumnos[i].Maquina == maquina:
+          if self.alumnos[i].maquina == maquina:
             return self.alumnos[i]
         return
 
@@ -108,7 +114,40 @@ class Controlador:
         '''
         llegada_alumno = self.eventos[len(self.eventos) - 2] #Busca el último evento del tipo llegada alumno ingresado en el vector eventos.
         fin_inscripcion = self.eventos[len(self.eventos) - 1] #Busca el último evento del tipo fin de inscripción ingresado en el vector eventos.
-        return [evento_actual.nombre, self.reloj, llegada_alumno.duracion, llegada_alumno.hora, fin_inscripcion.duracion, self.array_fin_inscripcion[0], self.array_fin_inscripcion[1], self.array_fin_inscripcion[2], self.array_fin_inscripcion[3], self.array_fin_inscripcion[4], maquina1.estado, maquina2.estado, maquina3.estado, maquina4.estado, maquina5.estado, len(self.cola), self.acum_alumnos_retiran, self.acum_alumnos_llegaron, maquina1.acum_tiempo_inscripcion, maquina2.acum_tiempo_inscripcion, maquina3.acum_tiempo_inscripcion, maquina4.acum_tiempo_inscripcion, maquina5.acum_tiempo_inscripcion]
+        lista = [evento_actual.nombre, 
+                self.reloj, 
+                llegada_alumno.duracion, 
+                llegada_alumno.hora, 
+                fin_inscripcion.duracion, 
+                self.array_fin_inscripcion[0], 
+                self.array_fin_inscripcion[1], 
+                self.array_fin_inscripcion[2], 
+                self.array_fin_inscripcion[3], 
+                self.array_fin_inscripcion[4], 
+                self.maquina1.estado, 
+                self.maquina2.estado, 
+                self.maquina3.estado, 
+                self.maquina4.estado, 
+                self.maquina5.estado, 
+                len(self.cola), 
+                self.acum_alumnos_retiran, 
+                self.acum_alumnos_llegaron, 
+                self.maquina1.acum_tiempo_inscripcion, 
+                self.maquina2.acum_tiempo_inscripcion, 
+                self.maquina3.acum_tiempo_inscripcion, 
+                self.maquina4.acum_tiempo_inscripcion, 
+                self.maquina5.acum_tiempo_inscripcion
+                ]
+
+        for a in self.alumnos:
+            lista.append(a.estado)
+            m = a.maquina
+            if m is None:
+                m = "-"
+            else:
+                m = m.id_maquina
+            lista.append(m)
+        return lista
 
     def simular(self):
         for i in range(self.n): 
@@ -130,30 +169,28 @@ class Controlador:
         print("\nacum alumnos que llegaron: ", self.acum_alumnos_llegaron)
         print("acum alumnos que se retiran: ", self.acum_alumnos_retiran)
 
-#Inicialización
-maquina1 = Maquina(0, "LIBRE", 0)
-maquina2 = Maquina(1, "LIBRE", 0)
-maquina3 = Maquina(2, "LIBRE", 0)
-maquina4 = Maquina(3, "LIBRE", 0)
-maquina5 = Maquina(4, "LIBRE", 0)
-controlador = Controlador(60, 50, 0, 8, 5, 2, 1, 3, 3, 0.16)
-#1 x = Tiempo a simular
-#2 n = Cantidad de iteraciones
-#3 reloj
-#4 a_insc
-#5 b_insc 
-#6 media_llegada_al
-#7 media_llegada_mant 
-#8 desv_llegada_mant 
-#9 media_demora_insc 
-#10 desv_demora_insc
-controlador.reloj = min(controlador.primer_llegada_alum, controlador.primer_llegada_mant)
-controlador.eventos.append(LlegadaAlumno())
-controlador.simular()
-'''
-DUDAS:
-- cómo buscar alumno a finalizar sin usar un for
-- qué hago en la fila en la que el alumno se retira
-- cómo manejar los objetos alumnos en el vector de estado
-- qué tengo que enviar en el front
-'''
+def main():    
+    #Inicialización
+    controlador = Controlador(60, 50, 0, 8, 5, 2, 1, 3, 3, 0.16)
+    #1 x = Tiempo a simular
+    #2 n = Cantidad de iteraciones
+    #3 reloj
+    #4 a_insc
+    #5 b_insc 
+    #6 media_llegada_al
+    #7 media_llegada_mant 
+    #8 desv_llegada_mant 
+    #9 media_demora_insc 
+    #10 desv_demora_insc
+    controlador.reloj = min(controlador.primer_llegada_alum, controlador.primer_llegada_mant)
+    controlador.eventos.append(LlegadaAlumno(controlador.reloj,controlador.media_demora_insc))
+    controlador.simular()
+    '''
+    DUDAS:
+    - cómo buscar alumno a finalizar sin usar un for: No se puede porque es una lista no ordenada
+    - qué hago en la fila en la que el alumno se retira
+    - cómo manejar los objetos alumnos en el vector de estado
+    - qué tengo que enviar en el front: El front recibe un dataframe
+    '''
+if __name__ == "__main__":
+    main()
