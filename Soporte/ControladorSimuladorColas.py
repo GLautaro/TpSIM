@@ -3,7 +3,7 @@ from Entidades.Evento import Evento, LlegadaAlumno, FinInscripcion
 from Entidades.Maquina import Maquina
 
 class Controlador:
-    def __init__(self, x, n, reloj):
+    def __init__(self, x, n, reloj, a_insc, b_insc, media_llegada_al, media_llegada_mant, desv_llegada_mant, media_demora_insc, desv_demora_insc):
         '''
         x = Tiempo a simular
         n = Cantidad de iteraciones
@@ -11,6 +11,13 @@ class Controlador:
         self.reloj = reloj
         self.x = x
         self.n = n
+        self.a_insc = a_insc
+        self.b_insc = b_insc
+        self.media_llegada_al = media_llegada_al
+        self.media_llegada_mant = media_llegada_mant
+        self.desv_llegada_mant = desv_llegada_mant
+        self.media_demora_insc = media_demora_insc
+        self.desv_demora_insc = desv_demora_insc
         self.primer_llegada_alum = 2 #Ver
         self.primer_llegada_mant = 60 #Ver
         self.cola = []
@@ -41,13 +48,13 @@ class Controlador:
         '''
         La función realiza las operaciones necesarias para el evento del tipo Llegada Alumno 
         '''
-        llegada_alumno = LlegadaAlumno(0.5, "Llegada Alumno")
+        llegada_alumno = LlegadaAlumno()
         self.eventos.append(llegada_alumno)
         self.acum_alumnos_llegaron+=1  
         if len(self.cola) < 4: # ¿Hay menos de 4 alumnos en la cola?
             maquina = self.buscarMaquinaLibre() # ¿Hay alguna máquina libre?
             if maquina != None: #Si hay algún servidor libre 
-                fin_inscripcion = FinInscripcion(5, "Fin de inscripción", maquina)
+                fin_inscripcion = FinInscripcion(maquina)
                 maquina.estado = "SIENDO_UTILIZADO"
                 self.array_fin_inscripcion[maquina.id_maquina] = fin_inscripcion.hora
                 maquina.acum_tiempo_inscripcion+= fin_inscripcion.duracion
@@ -75,7 +82,7 @@ class Controlador:
         alumno_finalizado.maquina, alumno_finalizado.estado = None, "-"
         if len(self.cola) > 1:
             self.cola.pop(0)
-            fin_inscripcion = FinInscripcion(5, "Fin de inscripción", maquina)
+            fin_inscripcion = FinInscripcion(maquina)
             self.eventos.append(fin_inscripcion)
             self.array_fin_inscripcion[maquina.id_maquina] = fin_inscripcion.hora
             maquina.acum_tiempo_inscripcion+= fin_inscripcion.duracion
@@ -87,14 +94,20 @@ class Controlador:
             self.array_fin_inscripcion[maquina.id_maquina] = 0
 
     def buscarAlumno(self, maquina):
+        '''
+        La función recibe como parámetro un objeto máquina y retorna el alumno que tiene como atributo ese objeto. 
+        '''
         for i in range(len(self.alumnos)):
           if self.alumnos[i].Maquina == maquina:
             return self.alumnos[i]
         return
 
     def crearVectorEstado(self, evento_actual):
-        llegada_alumno = self.eventos[len(self.eventos) - 2]
-        fin_inscripcion = self.eventos[len(self.eventos) - 1]
+        '''
+        La función recibe como parámetro el evento actual de la iteración y retorna el vector de estado correspondiente.
+        '''
+        llegada_alumno = self.eventos[len(self.eventos) - 2] #Busca el último evento del tipo llegada alumno ingresado en el vector eventos.
+        fin_inscripcion = self.eventos[len(self.eventos) - 1] #Busca el último evento del tipo fin de inscripción ingresado en el vector eventos.
         return [evento_actual.nombre, self.reloj, llegada_alumno.duracion, llegada_alumno.hora, fin_inscripcion.duracion, self.array_fin_inscripcion[0], self.array_fin_inscripcion[1], self.array_fin_inscripcion[2], self.array_fin_inscripcion[3], self.array_fin_inscripcion[4], maquina1.estado, maquina2.estado, maquina3.estado, maquina4.estado, maquina5.estado, len(self.cola), self.acum_alumnos_retiran, self.acum_alumnos_llegaron, maquina1.acum_tiempo_inscripcion, maquina2.acum_tiempo_inscripcion, maquina3.acum_tiempo_inscripcion, maquina4.acum_tiempo_inscripcion, maquina5.acum_tiempo_inscripcion]
 
     def simular(self):
@@ -123,14 +136,19 @@ maquina2 = Maquina(1, "LIBRE", 0)
 maquina3 = Maquina(2, "LIBRE", 0)
 maquina4 = Maquina(3, "LIBRE", 0)
 maquina5 = Maquina(4, "LIBRE", 0)
-controlador = Controlador(60, 1000, 0)
-'''
-parametro 1 = x = Tiempo a simular
-parametro 2 = n = Cantidad de iteraciones
-parametro 3 = reloj
-'''
+controlador = Controlador(60, 50, 0, 8, 5, 2, 1, 3, 3, 0.16)
+#1 x = Tiempo a simular
+#2 n = Cantidad de iteraciones
+#3 reloj
+#4 a_insc
+#5 b_insc 
+#6 media_llegada_al
+#7 media_llegada_mant 
+#8 desv_llegada_mant 
+#9 media_demora_insc 
+#10 desv_demora_insc
 controlador.reloj = min(controlador.primer_llegada_alum, controlador.primer_llegada_mant)
-controlador.eventos.append(LlegadaAlumno(controlador.primer_llegada_alum, "Llegada alumno"))
+controlador.eventos.append(LlegadaAlumno())
 controlador.simular()
 '''
 DUDAS:
