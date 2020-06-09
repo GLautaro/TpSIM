@@ -11,16 +11,16 @@ class Evento:
         return self.hora > evento.hora
 
 class LlegadaAlumno(Evento):
-    def __init__(self, reloj, media_demora_insc):
+    def __init__(self, reloj, media_demora_insc,contador):
         duracion = Truncate(random.expovariate(1/media_demora_insc), 4)
         hora = Truncate(reloj + duracion, 4)
-        nombre = "Llegada Alumno"
+        nombre = "Llegada Alumno " + str(contador)
         super().__init__(duracion, hora, nombre, reloj)
        
 class FinInscripcion(Evento):
-    def __init__(self, Maquina, reloj, a_insc, b_insc):
+    def __init__(self, Maquina, reloj, a_insc, b_insc,contador):
         duracion = Truncate(random.uniform(a_insc, b_insc), 4)
         hora = Truncate(reloj + duracion, 4)
-        nombre = "Fin Inscripción"
+        nombre = "Fin Inscripción " + str(contador)
         super().__init__(duracion, hora, nombre, reloj)
         self.Maquina = Maquina

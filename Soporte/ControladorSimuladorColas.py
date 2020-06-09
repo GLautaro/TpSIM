@@ -49,17 +49,17 @@ class Controlador:
         else:
           return None
     
-    def manejarLlegadaAlumno(self):
+    def manejarLlegadaAlumno(self,contador):
         '''
         La función realiza las operaciones necesarias para el evento del tipo Llegada Alumno 
         '''
-        llegada_alumno = LlegadaAlumno(self.reloj, self.media_demora_insc)
+        llegada_alumno = LlegadaAlumno(self.reloj, self.media_demora_insc,contador)
         self.eventos.append(llegada_alumno)
         self.acum_alumnos_llegaron+=1  
         if len(self.cola) <= 4: # ¿Hay menos de 4 alumnos en la cola?
             maquina = self.buscarMaquinaLibre() # ¿Hay alguna máquina libre?
             if maquina != None: #Si hay algún servidor libre 
-                fin_inscripcion = FinInscripcion(maquina,self.reloj,self.a_insc,self.b_insc)
+                fin_inscripcion = FinInscripcion(maquina,self.reloj,self.a_insc,self.b_insc,contador)
                 maquina.estado = "SIENDO_UTILIZADO"
                 self.array_fin_inscripcion[maquina.id_maquina] = fin_inscripcion.hora
                 maquina.acum_tiempo_inscripcion+= fin_inscripcion.duracion
@@ -76,7 +76,7 @@ class Controlador:
             fin_inscripcion = self.eventos[len(self.eventos) - 1] #Repetir fin insc fila anterior
         self.eventos.append(fin_inscripcion)
     
-    def manejarFinInscripcion(self, evento_actual):
+    def manejarFinInscripcion(self, evento_actual,contador):
         '''
         La función realiza las operaciones necesarias para el evento del tipo Fin Inscripción
         '''
@@ -88,7 +88,7 @@ class Controlador:
         alumno_finalizado.estado = "FINALIZADO"
         if len(self.cola) > 1:
             alumno = self.cola.pop(0)
-            fin_inscripcion = FinInscripcion(maquina,self.reloj,self.a_insc,self.b_insc)
+            fin_inscripcion = FinInscripcion(maquina,self.reloj,self.a_insc,self.b_insc,contador)
             self.array_fin_inscripcion[maquina.id_maquina] = fin_inscripcion.hora
             maquina.acum_tiempo_inscripcion+= fin_inscripcion.duracion
             alumno.estado, alumno.maquina, maquina.estado = "SIENDO_INS", maquina, "SIENDO_UTILIZADO"
@@ -150,6 +150,8 @@ class Controlador:
         return lista
 
     def simular(self):
+        contadorNumeroLlegada = 1
+        contadorNumeroFin = 1
         for i in range(self.n): 
             print("\nIteracion: ", i)
             if self.reloj < self.x: # ¿La hora actual es menor a la solicitada?
@@ -159,9 +161,11 @@ class Controlador:
                 print("Evento actual: ", evento_actual.nombre)
                 self.eventos.remove(evento_actual)
                 if isinstance(evento_actual, LlegadaAlumno): # Si el tipo de evento es una llegada de alumno:
-                    self.manejarLlegadaAlumno()   
+                    self.manejarLlegadaAlumno(contadorNumeroLlegada)
+                    contadorNumeroLlegada += 1   
                 elif isinstance(evento_actual, FinInscripcion):  #Si el tipo de evento es un fin de inscripción
-                    self.manejarFinInscripcion(evento_actual)
+                    self.manejarFinInscripcion(evento_actual,contadorNumeroFin)
+                    contadorNumeroFin += 1
                 print(self.crearVectorEstado(evento_actual)) #Vector de estado
                 self.reloj = min(self.eventos).hora #Incremetar reloj
             else:
@@ -183,7 +187,7 @@ def main():
     #9 media_demora_insc 
     #10 desv_demora_insc
     controlador.reloj = min(controlador.primer_llegada_alum, controlador.primer_llegada_mant)
-    controlador.eventos.append(LlegadaAlumno(controlador.reloj,controlador.media_demora_insc))
+    controlador.eventos.append(LlegadaAlumno(controlador.reloj,controlador.media_demora_insc,1))
     controlador.simular()
     '''
     DUDAS:

@@ -10,3 +10,4 @@ class Mantenimiento(Cliente):
 class Alumno(Cliente):
     def __init__(self, Maquina, estado):
         super().__init__(Maquina, estado)
+
