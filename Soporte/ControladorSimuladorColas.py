@@ -51,7 +51,7 @@ class Controlador:
         llegada_alumno = LlegadaAlumno()
         self.eventos.append(llegada_alumno)
         self.acum_alumnos_llegaron+=1  
-        if len(self.cola) < 4: # ¿Hay menos de 4 alumnos en la cola?
+        if len(self.cola) <= 4: # ¿Hay menos de 4 alumnos en la cola?
             maquina = self.buscarMaquinaLibre() # ¿Hay alguna máquina libre?
             if maquina != None: #Si hay algún servidor libre 
                 fin_inscripcion = FinInscripcion(maquina)
