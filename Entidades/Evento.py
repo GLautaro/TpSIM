@@ -31,3 +31,22 @@ class FinInscripcion(Evento):
         nombre = "Fin Inscripción " + str(contador)
         super().__init__(duracion, hora, nombre)
         self.Maquina = Maquina
+
+class LlegadaMantenimiento(Evento):
+    def __init__(self, reloj,media_llegada_mant, desv_llegada_mant, contador):
+        duracion = Truncate(random.gauss(media_llegada_mant, desv_llegada_mant), 2)
+        if duracion < 0:
+            duracion = -duracion
+        hora = Truncate((reloj + duracion), 2)
+        nombre = "Llegada Mantenimiento " + str(contador)
+        super().__init__(duracion, hora, nombre)
+       
+class FinMantenimiento(Evento):
+    def __init__(self, Maquina, reloj, media_demora_mant, desv_demora_mant, contador):
+        duracion = Truncate(random.gauss(media_demora_mant, desv_demora_mant), 2)
+        if duracion < 0:
+            duracion = -duracion
+        hora = Truncate((reloj + duracion), 2)
+        nombre = "Fin Mantenimiento " + str(contador)
+        super().__init__(duracion, hora, nombre)
+        self.Maquina = Maquina
