@@ -4,7 +4,7 @@ from Entidades.Evento import Evento, LlegadaAlumno, FinInscripcion, Inicializaci
 from Modulos.Utils import Truncate
 
 class Controlador:
-    def __init__(self, x, n, reloj, a_insc, b_insc, media_llegada_al, media_llegada_mant, desv_llegada_mant, media_demora_mant, desv_demora_mant):
+    def __init__(self, x, n, reloj, a_insc, b_insc, media_llegada_al, media_llegada_mant, desv_llegada_mant, media_demora_mant, desv_demora_mant,mostrar_desde,mostrar_cantidad):
         '''
         x = Tiempo a simular
         n = Cantidad de iteraciones
@@ -27,6 +27,8 @@ class Controlador:
         self.mantenimientos = []
         self.array_fin_inscripcion = [0, 0, 0, 0, 0]
         self.array_fin_mantenimiento = [0, 0, 0, 0, 0]
+        self.mostrar_desde_minuto = mostrar_desde
+        self.mostrar_cantidad_iteraciones = mostrar_cantidad
         self.maquina1 = Maquina(1, "LIBRE", 0)
         self.maquina2 = Maquina(2, "LIBRE", 0)
         self.maquina3 = Maquina(3, "LIBRE", 0)
@@ -54,18 +56,18 @@ class Controlador:
         '''
         La función recibe como parámetro un objeto máquina y retorna el alumno que tiene como atributo ese objeto. 
         '''
-        for i in range(len(self.alumnos)):
-          if self.alumnos[i].maquina == maquina:
-            return self.alumnos[i]
+        for al in self.alumnos:
+          if al.maquina == maquina:
+            return al
         return
     
     def buscarMantenimiento(self, maquina):
         '''
         La función recibe como parámetro un objeto máquina y retorna el mantenimiento que tiene como atributo ese objeto. 
         '''
-        for i in range(len(self.mantenimientos)):
-          if self.mantenimientos[i].maquina == maquina:
-            return self.mantenimientos[i] 
+        for man in self.mantenimientos:
+          if man.maquina == maquina:
+            return man
         return
 
     def buscarMantenimientosEnCola(self):
@@ -89,7 +91,9 @@ class Controlador:
             fin_mantenimiento = FinMantenimiento(maquina, self.reloj, self.media_demora_mant, self.desv_demora_mant, contadorNumeroFin-1)
             self.array_fin_mantenimiento[maquina.id_maquina-1] = fin_mantenimiento.hora
             fin_inscripcion = vector_auxiliar[2] #Busca el fin de inscripción de la fila anterior
-            cliente.estado, cliente.maquina = "REALIZANDO MANTENIMIENTO", maquina
+            cliente.estado = "REALIZANDO MANTENIMIENTO"
+            maquina.cliente = cliente
+            cliente.maquina = maquina
             self.eventos.append(fin_mantenimiento)
         else:
             cliente = self.cola.pop(0) #Elimina de la cola al cliente
@@ -98,7 +102,9 @@ class Controlador:
             maquina.acum_tiempo_inscripcion+= fin_inscripcion.duracion
             maquina.acum_tiempo_inscripcion = Truncate(maquina.acum_tiempo_inscripcion, 2)
             fin_mantenimiento = vector_auxiliar[3] #Busca el fin de mantenimiento de la fila anterior             
-            cliente.estado, cliente.maquina = "SIENDO INSCRIPTO", maquina          
+            cliente.estado = "SIENDO INSCRIPTO"
+            maquina.cliente = cliente
+            cliente.maquina = maquina
         self.eventos.append(fin_inscripcion)       
         return fin_mantenimiento, fin_inscripcion    
     
@@ -111,22 +117,25 @@ class Controlador:
             if isinstance(cliente, Alumno): 
                 fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, contadorNumeroLlegada-1)                            
                 self.array_fin_inscripcion[maquina.id_maquina-1] = fin_inscripcion.hora
-                maquina.acum_tiempo_inscripcion+= fin_inscripcion.duracion
+                maquina.acum_tiempo_inscripcion += fin_inscripcion.duracion
                 maquina.acum_tiempo_inscripcion = Truncate(maquina.acum_tiempo_inscripcion, 2)
                 cliente.estado = "SIENDO INSCRIPTO"
+                maquina.cliente = cliente
                 fin_mantenimiento = vector_auxiliar[3]
                 self.eventos.append(fin_inscripcion)
             if isinstance(cliente, Mantenimiento):
                 fin_mantenimiento = FinMantenimiento(maquina, self.reloj, self.media_demora_mant, self.desv_demora_mant, contadorNumeroLlegada-1)
                 self.array_fin_mantenimiento[maquina.id_maquina-1] = fin_mantenimiento.hora
                 cliente.estado = "REALIZANDO MANTENIMIENTO"
+                maquina.cliente = cliente
                 fin_inscripcion = vector_auxiliar[2]
                 self.eventos.append(fin_mantenimiento)                       
+
             cliente.maquina = maquina
             maquina.estado = "SIENDO UTILIZADO"
         else: #Si no hay ningún servidor libre
             print("Cliente ingresa a la cola")
-            cliente.Maquina = None          
+            cliente.maquina = None
             if isinstance(cliente, Alumno): 
                 cliente.estado = "ESPERANDO INSCRIPCIÓN"                
             if isinstance(cliente, Mantenimiento):
@@ -134,7 +143,7 @@ class Controlador:
             fin_inscripcion = vector_auxiliar[2] #Busca el fin de inscripción de la fila anterior  
             fin_mantenimiento = vector_auxiliar[3] #Busca el fin de mantenimiento de la fila anterior  
             self.cola.append(cliente)
-        return  fin_inscripcion, fin_mantenimiento                
+        return fin_inscripcion, fin_mantenimiento
 
     def manejarInicializacion(self):
         '''
@@ -154,8 +163,8 @@ class Controlador:
         '''
         llegada_alumno = LlegadaAlumno(self.reloj, self.media_llegada_al, contadorNumeroLlegada)
         self.eventos.append(llegada_alumno)
-        self.acum_alumnos_llegaron+=1
-        contadorAlumnos+= 1
+        self.acum_alumnos_llegaron += 1
+        contadorAlumnos += 1
         llegada_mantenimiento = vector_auxiliar[1]
         if len(self.cola) < 4: # ¿Hay menos de 4 alumnos en la cola?
             alumno = Alumno(None, "", contadorAlumnos)
@@ -163,7 +172,7 @@ class Controlador:
             fin_inscripcion, fin_mantenimiento = self.manejarCliente(alumno, contadorNumeroLlegada, vector_auxiliar)
         else:  #Si hay más de 4 alumnos en la cola
             print("Alumno se retira")
-            self.acum_alumnos_retiran+=1
+            self.acum_alumnos_retiran += 1
             evento_actual.hora += 30
             self.eventos.append(evento_actual)
             fin_inscripcion = vector_auxiliar[2] #Repetir fin insc fila anterior
@@ -189,11 +198,11 @@ class Controlador:
         '''
         llegada_alumno = vector_auxiliar[0]
         llegada_mantenimiento = vector_auxiliar[1]
-        maquina = evento_actual.Maquina
-        alumno_finalizado = self.buscarAlumno(maquina)
+        maquina = evento_actual.maquina
+        alumno_finalizado = maquina.cliente
         alumno_finalizado.maquina = None
         alumno_finalizado.estado = "FINALIZADO"
-        if len(self.cola) > 1:
+        if len(self.cola) >= 1:
             fin_mantenimiento, fin_inscripcion = self.buscarSiguienteAtencion(maquina, contadorNumeroFin, vector_auxiliar)
         else:
             maquina.estado = "LIBRE"
@@ -208,11 +217,11 @@ class Controlador:
         '''
         llegada_alumno = vector_auxiliar[0]
         llegada_mantenimiento = vector_auxiliar[1]
-        maquina = evento_actual.Maquina
-        mantenimiento_finalizado = self.buscarMantenimiento(maquina)
+        maquina = evento_actual.maquina
+        mantenimiento_finalizado = maquina.cliente
         mantenimiento_finalizado.maquina = None
         mantenimiento_finalizado.estado = "FINALIZADO"
-        if len(self.cola) > 1:
+        if len(self.cola) >= 1:
             fin_mantenimiento, fin_inscripcion = self.buscarSiguienteAtencion(maquina, contadorNumeroFin, vector_auxiliar)
         else:
             maquina.estado = "LIBRE"
@@ -285,13 +294,11 @@ class Controlador:
         vector_auxiliar = [0, 0, 0, 0] #Se utiliza para poder obtener los eventos de la fila anterior
         inicializacion = Inicializacion() 
         self.eventos.append(inicializacion)
-        for i in range(self.n): 
-
-            print("\nIteracion: ", i)        
+        for i in range(self.n):
             evento_actual = min(self.eventos)
             self.eventos.remove(evento_actual) #Elimina el evento de la fila actual
 
-            if self.reloj < self.x: # ¿La hora actual es menor a la solicitada?
+            if self.reloj <= self.x: # ¿La hora actual es menor a la solicitada?
 
                 if isinstance(evento_actual, Inicializacion):
                    llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento = self.manejarInicializacion()
@@ -314,13 +321,14 @@ class Controlador:
                 
                 vector_auxiliar = [llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento]
                 vector_estado = self.crearVectorEstado(evento_actual, llegada_alumno, fin_inscripcion, llegada_mantenimiento, fin_mantenimiento) #Vector de estado
+                print("\nIteracion: ", i)
                 print(vector_estado)
                 self.reloj = min(self.eventos).hora #Incremetar reloj
                 self.reloj = Truncate(self.reloj, 2)
                 
-                print ("Listado de eventos: ")
-                for j in self.eventos:
-                    print("- ", j.nombre)
+                #print ("Listado de eventos: ")
+                #for j in self.eventos:
+                #    print("- ", j.nombre)
                 
             else:
                 break        
@@ -328,7 +336,7 @@ class Controlador:
         print("acum alumnos que se retiran: ", self.acum_alumnos_retiran)
 
 def main():
-    controlador = Controlador(400, 300, 0, 10, 15, 5, 60, 3, 3, 0.16)
+    controlador = Controlador(400, 300, 0, 10, 15, 5, 60, 3, 3, 0.16, 0, 1000)
     #1 x = Tiempo a simular
     #2 n = Cantidad de iteraciones
     #3 reloj
@@ -338,7 +346,9 @@ def main():
     #7 media_llegada_mant 
     #8 desv_llegada_mant 
     #9 media_demora_mant 
-    #10 desv_demora_mant   
+    #10 desv_demora_mant
+    #11 mostrar_desde_minuto
+    #12 mostrar_cantidad_iteraciones
     controlador.simular()
     ''' 
     FALTA

@@ -3,8 +3,11 @@ class Maquina:
         self.id_maquina = id_maquina
         self.estado = estado
         self.acum_tiempo_inscripcion = 0
+        self.cliente = None
 
     def __eq__(self, otro):
+        if otro is None:
+            return False
         if isinstance(otro, Maquina):
             return self.id_maquina == otro.id_maquina
         return False

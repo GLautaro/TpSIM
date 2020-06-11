@@ -10,6 +10,9 @@ class Evento:
     def __gt__(self, evento):
         return self.hora > evento.hora
 
+    def __lt__(self, evento):
+        return self.hora < evento.hora
+
 class Inicializacion(Evento):
     def __init__(self):
         duracion = None
@@ -30,7 +33,7 @@ class FinInscripcion(Evento):
         hora = Truncate((reloj + duracion), 2)
         nombre = "Fin Inscripción " + str(contador)
         super().__init__(duracion, hora, nombre)
-        self.Maquina = Maquina
+        self.maquina = Maquina
 
 class LlegadaMantenimiento(Evento):
     def __init__(self, reloj,media_llegada_mant, desv_llegada_mant, contador):
@@ -49,4 +52,4 @@ class FinMantenimiento(Evento):
         hora = Truncate((reloj + duracion), 2)
         nombre = "Fin Mantenimiento " + str(contador)
         super().__init__(duracion, hora, nombre)
-        self.Maquina = Maquina
+        self.maquina = Maquina
