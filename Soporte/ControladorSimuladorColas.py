@@ -54,39 +54,39 @@ class Controlador:
         self.eventos.append(llegada_alumno)
         return llegada_alumno, fin_inscripcion
     
-    def manejarLlegadaAlumno(self, contador, evento_actual):
+    def manejarLlegadaAlumno(self, contadorNumeroLlegada, contadorAlumnos, evento_actual):
         '''
         La función realiza las operaciones necesarias para el evento del tipo Llegada Alumno 
         '''
-        llegada_alumno = LlegadaAlumno(self.reloj, self.media_llegada_al, contador)
+        llegada_alumno = LlegadaAlumno(self.reloj, self.media_llegada_al, contadorNumeroLlegada)
         self.eventos.append(llegada_alumno)
-        self.acum_alumnos_llegaron+=1  
+        self.acum_alumnos_llegaron+=1
+        contadorAlumnos+= 1  
         if len(self.cola) <= 4: # ¿Hay menos de 4 alumnos en la cola?
             maquina = self.buscarMaquinaLibre() # ¿Hay alguna máquina libre?
-            print(maquina)
             if maquina != None: #Si hay algún servidor libre 
-                fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, contador-1)
+                fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, contadorNumeroLlegada-1)
                 self.eventos.append(fin_inscripcion)
                 maquina.estado = "SIENDO UTILIZADO"
                 self.array_fin_inscripcion[maquina.id_maquina-1] = fin_inscripcion.hora
                 maquina.acum_tiempo_inscripcion+= fin_inscripcion.duracion
                 maquina.acum_tiempo_inscripcion = Truncate(maquina.acum_tiempo_inscripcion, 2)
-                alumno = Alumno(maquina, "SIENDO INSCRIPTO")
+                alumno = Alumno(maquina, "SIENDO INSCRIPTO", contadorAlumnos)
             else: #Si no hay ningún servidor libre
                 print("Alumno ingresa a la cola")
-                alumno = Alumno(None, "ESPERANDO INSCRIPCIÓN")
+                alumno = Alumno(None, "ESPERANDO INSCRIPCIÓN", contadorAlumnos)
                 self.cola.append(alumno)
                 fin_inscripcion = self.eventos[len(self.eventos) - 1] #Repetir fin insc fila anterior
             self.alumnos.append(alumno)
         else:  #Si hay más de 4 alumnos en la cola
-            print("Alumno se retira")
+            print("ID alumno que se retira: ", al)
             self.acum_alumnos_retiran+=1
             evento_actual.hora += 30
             self.eventos.append(evento_actual)
             fin_inscripcion = self.eventos[len(self.eventos) - 1] #Repetir fin insc fila anterior
-        return llegada_alumno, fin_inscripcion
+        return llegada_alumno, fin_inscripcion, contadorAlumnos
     
-    def manejarFinInscripcion(self, evento_actual, contador):
+    def manejarFinInscripcion(self, contadorNumeroFin, evento_actual):
         '''
         La función realiza las operaciones necesarias para el evento del tipo Fin Inscripción
         '''
@@ -97,7 +97,7 @@ class Controlador:
         alumno_finalizado.estado = "FINALIZADO"
         if len(self.cola) > 1:
             alumno = self.cola.pop(0)
-            fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, contador)
+            fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, contadorNumeroFin)
             self.eventos.append(fin_inscripcion)
             self.array_fin_inscripcion[maquina.id_maquina-1] = fin_inscripcion.hora
             maquina.acum_tiempo_inscripcion+= fin_inscripcion.duracion
@@ -150,6 +150,7 @@ class Controlador:
                 ]
 
         for a in self.alumnos:
+            lista.append("ID ALUMNO: " + str(a.id))
             lista.append(a.estado)
             m = a.maquina
             if m is None:
@@ -162,13 +163,11 @@ class Controlador:
     def simular(self):
         contadorNumeroLlegada = 1
         contadorNumeroFin = 1
+        contadorAlumnos = 1
         inicializacion = Inicializacion() 
         self.eventos.append(inicializacion)
         for i in range(self.n): 
-            print("\nIteracion: ", i)
-            print("Listado de eventos: ")
-            for j in self.eventos:
-                print('-'+j.nombre)          
+            print("\nIteracion: ", i)        
             evento_actual = min(self.eventos)
             self.eventos.remove(evento_actual)            
             if self.reloj < self.x: # ¿La hora actual es menor a la solicitada?
@@ -176,24 +175,21 @@ class Controlador:
                     llegada_alumno, fin_inscripcion = self.manejarInicializacion()
                 if isinstance(evento_actual, LlegadaAlumno): # Si el tipo de evento es una llegada de alumno
                     contadorNumeroLlegada += 1  
-                    llegada_alumno, fin_inscripcion = self.manejarLlegadaAlumno(contadorNumeroLlegada, evento_actual)
+                    llegada_alumno, fin_inscripcion, contadorAlumnos = self.manejarLlegadaAlumno(contadorNumeroLlegada, contadorAlumnos, evento_actual)
                 elif isinstance(evento_actual, FinInscripcion):  #Si el tipo de evento es un fin de inscripción
                     contadorNumeroFin += 1
-                    llegada_alumno, fin_inscripcion = self.manejarFinInscripcion(evento_actual,contadorNumeroFin)
+                    llegada_alumno, fin_inscripcion = self.manejarFinInscripcion(contadorNumeroFin, evento_actual)
                 vector_estado = self.crearVectorEstado(evento_actual, llegada_alumno, fin_inscripcion) #Vector de estado
                 print(vector_estado)
                 self.reloj = min(self.eventos).hora #Incremetar reloj
                 self.reloj = Truncate(self.reloj, 2)
             else:
-                break
-            print("Listado de eventos: ")
-            for j in self.eventos:
-                print('-'+j.nombre)            
+                break        
         print("\nacum alumnos que llegaron: ", self.acum_alumnos_llegaron)
         print("acum alumnos que se retiran: ", self.acum_alumnos_retiran)
 
 def main():
-    controlador = Controlador(100, 1000, 0, 8, 5, 2, 1, 3, 3, 0.16)
+    controlador = Controlador(400, 100, 0, 10, 15, 1, 1, 3, 3, 0.16)
     #1 x = Tiempo a simular
     #2 n = Cantidad de iteraciones
     #3 reloj
@@ -207,8 +203,9 @@ def main():
     controlador.simular()
     ''' 
     FALTA
-    - Revisar tiempo entre llegadas alumnos
     - Agregar RND en vector de estado
+    - Agregar mantenimientos
+    - Test cuando el alumno se retira, ¿Hay que crear el objeto alumno?
     '''
 
 if __name__ == "__main__":
