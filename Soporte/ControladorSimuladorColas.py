@@ -65,7 +65,7 @@ class Controlador:
         '''
         for i in range(len(self.mantenimientos)):
           if self.mantenimientos[i].maquina == maquina:
-            return self.mantenimientos[i]
+            return self.mantenimientos[i] 
         return
 
     def buscarMantenimientosEnCola(self):
@@ -74,31 +74,38 @@ class Controlador:
         '''
         for i in range(len(self.cola)):          
             if isinstance(self.cola[i], Mantenimiento):
-                return self.cola[i]
+                return self.cola[i] #Falta retornar el objeto mantenimiento que ocurra primero
         return
 
     def buscarSiguienteAtencion(self, maquina, contadorNumeroFin, vector_auxiliar):
+        '''
+        La función se ejecuta cuando ocurre un evento de Fin de Inscripción o de Fin de mantenimiento, en donde el servidor se desocupa y aún exiten clientes en cola.
+        Si existe algún cliente de mantenimiento, se le dará prioridad. 
+        '''
         maquina.estado = "SIENDO UTILIZADO"
         cliente = self.buscarMantenimientosEnCola()
-        if cliente != None:
-            self.cola.remove(cliente)
+        if cliente != None: #Si hay algún mantenimiento en cola
+            self.cola.remove(cliente) #Elimina de la cola al cliente
             fin_mantenimiento = FinMantenimiento(maquina, self.reloj, self.media_demora_mant, self.desv_demora_mant, contadorNumeroFin-1)
             self.array_fin_mantenimiento[maquina.id_maquina-1] = fin_mantenimiento.hora
-            fin_inscripcion = vector_auxiliar[2]
+            fin_inscripcion = vector_auxiliar[2] #Busca el fin de inscripción de la fila anterior
             cliente.estado, cliente.maquina = "REALIZANDO MANTENIMIENTO", maquina
         else:
-            cliente = self.cola.pop(0)
+            cliente = self.cola.pop(0) #Elimina de la cola al cliente
             fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, contadorNumeroFin)
             self.array_fin_inscripcion[maquina.id_maquina-1] = fin_inscripcion.hora
             maquina.acum_tiempo_inscripcion+= fin_inscripcion.duracion
             maquina.acum_tiempo_inscripcion = Truncate(maquina.acum_tiempo_inscripcion, 2)
-            fin_mantenimiento = vector_auxiliar[3]             
+            fin_mantenimiento = vector_auxiliar[3] #Busca el fin de mantenimiento de la fila anterior             
             cliente.estado, cliente.maquina = "SIENDO INSCRIPTO", maquina          
         self.eventos.append(fin_inscripcion)
         self.eventos.append(fin_mantenimiento)
-        return fin_mantenimiento, fin_inscripcion, vector_auxiliar     
+        return fin_mantenimiento, fin_inscripcion    
     
     def manejarCliente(self, cliente, contadorNumeroLlegada, vector_auxiliar):
+        ''' 
+        La función realiza las operaciones necesarias para manejar los objetos clientes
+        '''
         maquina = self.buscarMaquinaLibre() # ¿Hay alguna máquina libre?
         if maquina != None: #Si hay algún servidor libre            
             if isinstance(cliente, Alumno): 
@@ -124,8 +131,8 @@ class Controlador:
                 cliente.estado = "ESPERANDO INSCRIPCIÓN"                
             if isinstance(cliente, Mantenimiento):
                 cliente.estado = "ESPERANDO MANTENIMIENTO"
-            fin_inscripcion = vector_auxiliar[2] #Repetir fin insc fila anterior
-            fin_mantenimiento = vector_auxiliar[3]
+            fin_inscripcion = vector_auxiliar[2] #Busca el fin de inscripción de la fila anterior  
+            fin_mantenimiento = vector_auxiliar[3] #Busca el fin de mantenimiento de la fila anterior  
             self.cola.append(cliente)
         return  fin_inscripcion, fin_mantenimiento                
 
@@ -187,7 +194,7 @@ class Controlador:
         alumno_finalizado.maquina = None
         alumno_finalizado.estado = "FINALIZADO"
         if len(self.cola) > 1:
-            fin_mantenimiento, fin_inscripcion, vector_auxiliar  = self.buscarSiguienteAtencion(maquina, contadorNumeroFin, vector_auxiliar)
+            fin_mantenimiento, fin_inscripcion = self.buscarSiguienteAtencion(maquina, contadorNumeroFin, vector_auxiliar)
         else:
             maquina.estado = "LIBRE"
             self.array_fin_inscripcion[maquina.id_maquina-1] = 0
@@ -206,7 +213,7 @@ class Controlador:
         mantenimiento_finalizado.maquina = None
         mantenimiento_finalizado.estado = "FINALIZADO"
         if len(self.cola) > 1:
-            fin_mantenimiento, fin_inscripcion, vector_auxiliar  = self.buscarSiguienteAtencion(maquina, contadorNumeroFin, vector_auxiliar)
+            fin_mantenimiento, fin_inscripcion = self.buscarSiguienteAtencion(maquina, contadorNumeroFin, vector_auxiliar)
         else:
             maquina.estado = "LIBRE"
             self.array_fin_inscripcion[maquina.id_maquina-1] = 0
@@ -275,13 +282,15 @@ class Controlador:
     def simular(self):
         contadorNumeroLlegadaAl = contadorNumeroFinIns = contadorNumeroLlegadaMant = contadorNumeroFinMant = 1
         contadorAlumnos = contadorMantenimientos = 0
-        vector_auxiliar = [0, 0, 0, 0]
+        vector_auxiliar = [0, 0, 0, 0] #Se utiliza para poder obtener los eventos de la fila anterior
         inicializacion = Inicializacion() 
         self.eventos.append(inicializacion)
         for i in range(self.n): 
+
             print("\nIteracion: ", i)        
             evento_actual = min(self.eventos)
-            self.eventos.remove(evento_actual)            
+            self.eventos.remove(evento_actual) #Elimina el evento de la fila actual
+
             if self.reloj < self.x: # ¿La hora actual es menor a la solicitada?
 
                 if isinstance(evento_actual, Inicializacion):
@@ -330,6 +339,8 @@ def main():
     FALTA
     - Agregar RND en vector de estado
     - Test cuando el alumno se retira, ¿Hay que crear el objeto alumno?
+    - Negativos en distribución normal de los mantenimientos
+    - Priorizar el mantenimiento en la búsqueda del evento actual
     '''
 
 if __name__ == "__main__":
