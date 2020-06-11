@@ -90,6 +90,7 @@ class Controlador:
             self.array_fin_mantenimiento[maquina.id_maquina-1] = fin_mantenimiento.hora
             fin_inscripcion = vector_auxiliar[2] #Busca el fin de inscripción de la fila anterior
             cliente.estado, cliente.maquina = "REALIZANDO MANTENIMIENTO", maquina
+            self.eventos.append(fin_mantenimiento)
         else:
             cliente = self.cola.pop(0) #Elimina de la cola al cliente
             fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, contadorNumeroFin)
@@ -98,8 +99,7 @@ class Controlador:
             maquina.acum_tiempo_inscripcion = Truncate(maquina.acum_tiempo_inscripcion, 2)
             fin_mantenimiento = vector_auxiliar[3] #Busca el fin de mantenimiento de la fila anterior             
             cliente.estado, cliente.maquina = "SIENDO INSCRIPTO", maquina          
-        self.eventos.append(fin_inscripcion)
-        self.eventos.append(fin_mantenimiento)
+        self.eventos.append(fin_inscripcion)       
         return fin_mantenimiento, fin_inscripcion    
     
     def manejarCliente(self, cliente, contadorNumeroLlegada, vector_auxiliar):
@@ -126,7 +126,7 @@ class Controlador:
             maquina.estado = "SIENDO UTILIZADO"
         else: #Si no hay ningún servidor libre
             print("Cliente ingresa a la cola")
-            cliente.maquina = None          
+            cliente.Maquina = None          
             if isinstance(cliente, Alumno): 
                 cliente.estado = "ESPERANDO INSCRIPCIÓN"                
             if isinstance(cliente, Mantenimiento):
@@ -216,7 +216,7 @@ class Controlador:
             fin_mantenimiento, fin_inscripcion = self.buscarSiguienteAtencion(maquina, contadorNumeroFin, vector_auxiliar)
         else:
             maquina.estado = "LIBRE"
-            self.array_fin_inscripcion[maquina.id_maquina-1] = 0
+            self.array_fin_mantenimiento[maquina.id_maquina-1] = 0
             fin_inscripcion = vector_auxiliar[2]
             fin_mantenimiento = vector_auxiliar[3]
         return llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento
@@ -237,11 +237,11 @@ class Controlador:
                 "Fin de inscripción 5: " + str(self.array_fin_inscripcion[4]),
                 "Tiempo entre llegadas mantenimiento: " + str(llegada_mantenimiento.duracion), 
                 "Próxima llegada mantenimiento: " + str(llegada_mantenimiento.hora),
-                "Fin de mantenimiento 1: " + str(self.array_fin_inscripcion[0]), 
-                "Fin de mantenimiento 2: " + str(self.array_fin_inscripcion[1]), 
-                "Fin de mantenimiento 3: " + str(self.array_fin_inscripcion[2]), 
-                "Fin de mantenimiento 4: " + str(self.array_fin_inscripcion[3]), 
-                "Fin de mantenimiento 5: " + str(self.array_fin_inscripcion[4]),  
+                "Fin de mantenimiento 1: " + str(self.array_fin_mantenimiento[0]), 
+                "Fin de mantenimiento 2: " + str(self.array_fin_mantenimiento[1]), 
+                "Fin de mantenimiento 3: " + str(self.array_fin_mantenimiento[2]), 
+                "Fin de mantenimiento 4: " + str(self.array_fin_mantenimiento[3]), 
+                "Fin de mantenimiento 5: " + str(self.array_fin_mantenimiento[4]),  
                 "Maquina 1: " + str(self.maquina1.estado), 
                 "Maquina 2: " + str(self.maquina2.estado), 
                 "Maquina 3: " + str(self.maquina3.estado), 
@@ -317,13 +317,18 @@ class Controlador:
                 print(vector_estado)
                 self.reloj = min(self.eventos).hora #Incremetar reloj
                 self.reloj = Truncate(self.reloj, 2)
+                
+                print ("Listado de eventos: ")
+                for j in self.eventos:
+                    print("- ", j.nombre)
+                
             else:
                 break        
         print("\nacum alumnos que llegaron: ", self.acum_alumnos_llegaron)
         print("acum alumnos que se retiran: ", self.acum_alumnos_retiran)
 
 def main():
-    controlador = Controlador(400, 30, 0, 10, 15, 1, 60, 3, 3, 0.16)
+    controlador = Controlador(400, 300, 0, 10, 15, 5, 60, 3, 3, 0.16)
     #1 x = Tiempo a simular
     #2 n = Cantidad de iteraciones
     #3 reloj
