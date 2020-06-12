@@ -398,19 +398,19 @@ class Controlador:
                     llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento = self.manejarFinMantenimiento(evento_actual, contadorNumeroFinMant, vector_auxiliar)
                 vector_auxiliar = [llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento]
                 vector_estado = self.crearVectorEstado(evento_actual, llegada_alumno, fin_inscripcion, llegada_mantenimiento) #Vector de estado
-                if self.reloj >= self.mostrar_desde_minuto and cantidad_iteraciones_mostradas <= self.mostrar_cantidad_iteraciones:
+                if self.reloj >= self.mostrar_desde_minuto and cantidad_iteraciones_mostradas < self.mostrar_cantidad_iteraciones:
                     vector_estado_parcial = self.crearVectorEstadoParcial(evento_actual, llegada_alumno, fin_inscripcion, llegada_mantenimiento)
                     loc = len(df_datos_fijos)
                     df_datos_fijos.loc[loc] = vector_estado_parcial
                     for al in self.alumnos:
                         df_alumnos = al.agregarDF(df_alumnos, loc)
-                    for man in self.mantenimientos:
-                        df_manten = man.agregarDF(df_manten, loc)
+                    for m in self.mantenimientos:
+                        df_manten = m.agregarDF(df_manten,loc)
 
                     cantidad_iteraciones_mostradas += 1
                 print("\nIteracion: ", i)
                 print(vector_estado)
-                self.reloj = min(self.eventos).hora #Incremetar reloj
+                self.reloj = min(self.eventos).hora #Incrementar reloj
                 self.reloj = Truncate(self.reloj, 2)
 
                 #print ("Listado de eventos: ")
@@ -421,12 +421,10 @@ class Controlador:
                 break        
         print("\nacum alumnos que llegaron: ", self.acum_alumnos_llegaron)
         print("acum alumnos que se retiran: ", self.acum_alumnos_retiran)
-        df_datos_fijos = df_datos_fijos.join(df_alumnos)
-        df_datos_fijos = df_datos_fijos.join(df_manten)
-        return df_datos_fijos
+        return df_datos_fijos.join(df_alumnos).join(df_manten)
 
 def main():
-    controlador = Controlador(400, 300, 0, 10, 15, 5, 60, 3, 3, 0.16, 0, 20)
+    controlador = Controlador(4000, 3000, 0, 10, 15, 5, 60, 3, 3, 0.16, 0, 200)
     #1 x = Tiempo a simular
     #2 n = Cantidad de iteraciones
     #3 reloj

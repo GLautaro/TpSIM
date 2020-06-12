@@ -37,7 +37,9 @@ class FinInscripcion(Evento):
 
 class LlegadaMantenimiento(Evento):
     def __init__(self, reloj,media_llegada_mant, desv_llegada_mant, contador):
-        duracion = Truncate(random.gauss(media_llegada_mant, desv_llegada_mant), 2)
+        inferior = media_llegada_mant - desv_llegada_mant
+        superior = media_llegada_mant + desv_llegada_mant
+        duracion = Truncate(random.uniform(inferior, superior), 2)
         if duracion < 0:
             duracion = -duracion
         hora = Truncate((reloj + duracion), 2)
