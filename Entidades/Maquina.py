@@ -1,9 +1,9 @@
 class Maquina:
-    def __init__(self, id_maquina, estado, acum_tiempo_inscripcion):
+    def __init__(self, id_maquina, estado, acum_cant_inscripciones, estado_mantenimiento):
         self.id_maquina = id_maquina
         self.estado = estado
-        self.acum_tiempo_inscripcion = 0
-        self.cliente = None
+        self.acum_cant_inscripciones = 0
+        self.estado_mantenimiento = None
 
     def __eq__(self, otro):
         if otro is None:

@@ -5,19 +5,18 @@ from Entidades.Evento import Evento, LlegadaAlumno, FinInscripcion, Inicializaci
 from Modulos.Utils import Truncate,GenerarExcel
 
 class Controlador:
-    def __init__(self, x, n, reloj, a_insc, b_insc, media_llegada_al, media_llegada_mant, desv_llegada_mant, media_demora_mant, desv_demora_mant,mostrar_desde,mostrar_cantidad):
+    def __init__(self, x, reloj, a_insc, b_insc, media_llegada_al, a_mant, b_mant, media_demora_mant, desv_demora_mant,mostrar_desde,mostrar_cantidad):
         '''
         x = Tiempo a simular
         n = Cantidad de iteraciones
         '''
         self.reloj = reloj
         self.x = x
-        self.n = n
         self.a_insc = a_insc
         self.b_insc = b_insc
         self.media_llegada_al = media_llegada_al
-        self.media_llegada_mant = media_llegada_mant
-        self.desv_llegada_mant = desv_llegada_mant
+        self.a_mant = a_mant
+        self.b_mant = b_mant
         self.media_demora_mant = media_demora_mant
         self.desv_demora_mant = desv_demora_mant
         self.cola = []
@@ -30,11 +29,11 @@ class Controlador:
         self.array_fin_mantenimiento = [0, 0, 0, 0, 0]
         self.mostrar_desde_minuto = mostrar_desde
         self.mostrar_cantidad_iteraciones = mostrar_cantidad
-        self.maquina1 = Maquina(1, "LIBRE", 0)
-        self.maquina2 = Maquina(2, "LIBRE", 0)
-        self.maquina3 = Maquina(3, "LIBRE", 0)
-        self.maquina4 = Maquina(4, "LIBRE", 0)
-        self.maquina5 = Maquina(5, "LIBRE", 0)
+        self.maquina1 = Maquina(1, "LIBRE", 0, "NO MANTENIDA")
+        self.maquina2 = Maquina(2, "LIBRE", 0, "NO MANTENIDA")
+        self.maquina3 = Maquina(3, "LIBRE", 0, "NO MANTENIDA")
+        self.maquina4 = Maquina(4, "LIBRE", 0, "NO MANTENIDA")
+        self.maquina5 = Maquina(5, "LIBRE", 0, "NO MANTENIDA")
 
     def buscarMaquinaLibre(self):
         '''
@@ -100,8 +99,7 @@ class Controlador:
             cliente = self.cola.pop(0) #Elimina de la cola al cliente
             fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, contadorNumeroFin)
             self.array_fin_inscripcion[maquina.id_maquina-1] = fin_inscripcion.hora
-            maquina.acum_tiempo_inscripcion+= fin_inscripcion.duracion
-            maquina.acum_tiempo_inscripcion = Truncate(maquina.acum_tiempo_inscripcion, 2)
+            maquina.acum_cant_inscripciones+= 1
             fin_mantenimiento = vector_auxiliar[3] #Busca el fin de mantenimiento de la fila anterior
             cliente.estado = "SIENDO INSCRIPTO"
             maquina.cliente = cliente
@@ -118,8 +116,7 @@ class Controlador:
             if isinstance(cliente, Alumno):
                 fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, contadorNumeroLlegada-1)
                 self.array_fin_inscripcion[maquina.id_maquina-1] = fin_inscripcion.hora
-                maquina.acum_tiempo_inscripcion += fin_inscripcion.duracion
-                maquina.acum_tiempo_inscripcion = Truncate(maquina.acum_tiempo_inscripcion, 2)
+                maquina.acum_cant_inscripciones += 1
                 cliente.estado = "SIENDO INSCRIPTO"
                 maquina.cliente = cliente
                 fin_mantenimiento = vector_auxiliar[3]
@@ -151,7 +148,7 @@ class Controlador:
         La función realiza las operaciones necesarias para el evento del tipo Inicialización
         '''
         llegada_alumno = LlegadaAlumno(self.reloj, self.media_llegada_al, 1)
-        llegada_mantenimiento = LlegadaMantenimiento(self.reloj, self.media_llegada_mant, self.desv_llegada_mant, 1)
+        llegada_mantenimiento = LlegadaMantenimiento(self.reloj, self.a_mant, self.b_mant, 1)
         fin_inscripcion = FinInscripcion(None, 0, 0, 0, 0)
         fin_mantenimiento = FinMantenimiento(None, 0, 0, 0, 0)
         self.eventos.append(llegada_alumno)
@@ -184,7 +181,7 @@ class Controlador:
         '''
         La función realiza las operaciones necesarias para el evento del tipo Llegada Mantenimiento
         '''
-        llegada_mantenimiento = LlegadaMantenimiento(self.reloj, self.media_llegada_mant, self.desv_llegada_mant, contadorNumeroLlegada)
+        llegada_mantenimiento = LlegadaMantenimiento(self.reloj, self.a_mant, self.b_mant, contadorNumeroLlegada)
         self.eventos.append(llegada_mantenimiento)
         contadorMantenimientos += 1
         llegada_alumno = vector_auxiliar[0]
@@ -253,18 +250,23 @@ class Controlador:
                 "Fin de mantenimiento 4: " + str(self.array_fin_mantenimiento[3]),
                 "Fin de mantenimiento 5: " + str(self.array_fin_mantenimiento[4]),
                 "Maquina 1: " + str(self.maquina1.estado),
+                "Mantenimiento 1: " + str(self.maquina1.estado_mantenimiento),
                 "Maquina 2: " + str(self.maquina2.estado),
+                "Mantenimiento 2: " + str(self.maquina2.estado_mantenimiento),
                 "Maquina 3: " + str(self.maquina3.estado),
+                "Mantenimiento 3: " + str(self.maquina3.estado_mantenimiento),
                 "Maquina 4: " + str(self.maquina4.estado),
+                "Mantenimiento 4: " + str(self.maquina4.estado_mantenimiento),
                 "Maquina 5: " + str(self.maquina5.estado),
+                "Mantenimiento 5: " + str(self.maquina5.estado_mantenimiento),
                 "Cola: " + str(len(self.cola)),
                 "Alumnos retiran: " + str(self.acum_alumnos_retiran),
                 "Alumnos llegaron: " + str(self.acum_alumnos_llegaron),
-                "ACUM Maquina 1: " + str(self.maquina1.acum_tiempo_inscripcion),
-                "ACUM Maquina 2: " + str(self.maquina2.acum_tiempo_inscripcion),
-                "ACUM Maquina 3: " + str(self.maquina3.acum_tiempo_inscripcion),
-                "ACUM Maquina 4: " + str(self.maquina4.acum_tiempo_inscripcion),
-                "ACUM Maquina 5: " + str(self.maquina5.acum_tiempo_inscripcion)
+                "ACUM inscripciones Maquina 1: " + str(self.maquina1.acum_cant_inscripciones),
+                "ACUM inscripciones Maquina 2: " + str(self.maquina2.acum_cant_inscripciones),
+                "ACUM inscripciones Maquina 3: " + str(self.maquina3.acum_cant_inscripciones),
+                "ACUM inscripciones Maquina 4: " + str(self.maquina4.acum_cant_inscripciones),
+                "ACUM inscripciones Maquina 5: " + str(self.maquina5.acum_cant_inscripciones)
                 ]
 
         for a in self.alumnos:
@@ -312,18 +314,23 @@ class Controlador:
                 str(self.array_fin_mantenimiento[3]),
                 str(self.array_fin_mantenimiento[4]),
                 str(self.maquina1.estado),
+                str(self.maquina1.estado_mantenimiento),
                 str(self.maquina2.estado),
+                str(self.maquina2.estado_mantenimiento),
                 str(self.maquina3.estado),
+                str(self.maquina3.estado_mantenimiento),
                 str(self.maquina4.estado),
+                str(self.maquina4.estado_mantenimiento),
                 str(self.maquina5.estado),
+                str(self.maquina5.estado_mantenimiento),
                 str(len(self.cola)),
                 str(self.acum_alumnos_retiran),
                 str(self.acum_alumnos_llegaron),
-                str(self.maquina1.acum_tiempo_inscripcion),
-                str(self.maquina2.acum_tiempo_inscripcion),
-                str(self.maquina3.acum_tiempo_inscripcion),
-                str(self.maquina4.acum_tiempo_inscripcion),
-                str(self.maquina5.acum_tiempo_inscripcion)
+                str(self.maquina1.acum_cant_inscripciones),
+                str(self.maquina2.acum_cant_inscripciones),
+                str(self.maquina3.acum_cant_inscripciones),
+                str(self.maquina4.acum_cant_inscripciones),
+                str(self.maquina5.acum_cant_inscripciones)
                 ]
 
     def crearColumnasParcialesDataFrame(self):
@@ -331,36 +338,41 @@ class Controlador:
         Crea una lista con las columnas correspondientes a los datos siempre presentes en el dataframe
         '''
         return [
-                 "Evento_actual",
+                 "Evento Actual",
                  "Reloj",
-                 "Tiempo_entre_llegadas_alumno",
-                 "Próxima_llegada_alumno",
-                 "Tiempo_inscripción",
-                 "Fin_inscripción_1",
-                 "Fin_inscripción_2",
-                 "Fin_inscripción_3",
-                 "Fin_inscripción_4",
-                 "Fin_inscripción_5",
-                 "Tiempo_entre_llegadas_mantenimiento",
-                 "Próxima_llegada_mantenimiento",
-                 "Fin_mantenimiento_1",
-                 "Fin_mantenimiento_2",
-                 "Fin_mantenimiento_3",
-                 "Fin_mantenimiento_4",
-                 "Fin_mantenimiento_5",
-                 "Maquina_1",
-                 "Maquina_2",
-                 "Maquina_3",
-                 "Maquina_4",
-                 "Maquina_5",
+                 "Tiempo entre llegadasalumno",
+                 "Próxima llegada alumno",
+                 "Tiempo inscripción",
+                 "Fin inscripción 1",
+                 "Fin inscripción 2",
+                 "Fin inscripción 3",
+                 "Fin inscripción 4",
+                 "Fin inscripción 5",
+                 "Tiempo entre llegadas mantenimiento",
+                 "Próxima llegada mantenimiento",
+                 "Fin mantenimiento 1",
+                 "Fin mantenimiento 2",
+                 "Fin mantenimiento 3",
+                 "Fin mantenimiento 4",
+                 "Fin mantenimiento 5",
+                 "Máquina 1",
+                 "Mantenimiento 1",
+                 "Máquina 2",
+                 "Mantenimiento 2",
+                 "Máquina 3",
+                 "Mantenimiento 3",
+                 "Máquina 4",
+                 "Mantenimiento 4",
+                 "Máquina 5",
+                 "Mantenimiento 5",
                  "Cola",
-                 "Alumnos_retiran",
-                 "Alumnos_ llegaron",
-                 "ACUM_Maquina_1",
-                 "ACUM_Maquina_2",
-                 "ACUM_Maquina_3",
-                 "ACUM_Maquina_4",
-                 "ACUM_Maquina_5"
+                 "Alumnos retiran",
+                 "Alumnos llegaron",
+                 "Inscripciones Maquina 1",
+                 "Inscripciones Maquina 2",
+                 "Inscripciones Maquina 3",
+                 "Inscripciones Maquina 4",
+                 "Inscripciones Maquina 5"
                  ]
 
     def simular(self):
@@ -374,77 +386,50 @@ class Controlador:
         inicializacion = Inicializacion()
         self.eventos.append(inicializacion)
         cantidad_iteraciones_mostradas = 0
-        for i in range(self.n):
+        
+        while self.reloj <= self.x:
             evento_actual = min(self.eventos)
             self.eventos.remove(evento_actual) #Elimina el evento de la fila actual
-            if self.reloj <= self.x: # ¿La hora actual es menor a la solicitada?
-                if isinstance(evento_actual, Inicializacion):
-                   llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento = self.manejarInicializacion()
+            if isinstance(evento_actual, Inicializacion):
+                llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento = self.manejarInicializacion()
 
-                if isinstance(evento_actual, LlegadaAlumno): # Si el tipo de evento es una llegada de alumno
-                    contadorNumeroLlegadaAl += 1
-                    llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento, contadorAlumnos = self.manejarLlegadaAlumno(contadorNumeroLlegadaAl, contadorAlumnos, evento_actual, vector_auxiliar)
+            if isinstance(evento_actual, LlegadaAlumno): # Si el tipo de evento es una llegada de alumno
+                contadorNumeroLlegadaAl += 1
+                llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento, contadorAlumnos = self.manejarLlegadaAlumno(contadorNumeroLlegadaAl, contadorAlumnos, evento_actual, vector_auxiliar)
 
-                elif isinstance(evento_actual, LlegadaMantenimiento): # Si el tipo de evento es una llegada de mantenimiento
-                    contadorNumeroLlegadaMant += 1
-                    llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento, contadorMantenimientos = self.manejarLlegadaMantenimiento(contadorNumeroLlegadaMant, contadorMantenimientos, evento_actual, vector_auxiliar)
+            elif isinstance(evento_actual, LlegadaMantenimiento): # Si el tipo de evento es una llegada de mantenimiento
+                contadorNumeroLlegadaMant += 1
+                llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento, contadorMantenimientos = self.manejarLlegadaMantenimiento(contadorNumeroLlegadaMant, contadorMantenimientos, evento_actual, vector_auxiliar)
 
-                elif isinstance(evento_actual, FinInscripcion):  #Si el tipo de evento es un fin de inscripción
-                    contadorNumeroFinIns += 1
-                    llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento = self.manejarFinInscripcion(evento_actual, contadorNumeroFinIns ,vector_auxiliar)
+            elif isinstance(evento_actual, FinInscripcion):  #Si el tipo de evento es un fin de inscripción
+                contadorNumeroFinIns += 1
+                llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento = self.manejarFinInscripcion(evento_actual, contadorNumeroFinIns ,vector_auxiliar)
 
-                elif isinstance(evento_actual, FinMantenimiento):  #Si el tipo de evento es un fin de mantenimiento
-                    contadorNumeroFinMant += 1
-                    llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento = self.manejarFinMantenimiento(evento_actual, contadorNumeroFinMant, vector_auxiliar)
-                vector_auxiliar = [llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento]
-                vector_estado = self.crearVectorEstado(evento_actual, llegada_alumno, fin_inscripcion, llegada_mantenimiento) #Vector de estado
-                if self.reloj >= self.mostrar_desde_minuto and cantidad_iteraciones_mostradas < self.mostrar_cantidad_iteraciones:
-                    vector_estado_parcial = self.crearVectorEstadoParcial(evento_actual, llegada_alumno, fin_inscripcion, llegada_mantenimiento)
-                    loc = len(df_datos_fijos)
-                    df_datos_fijos.loc[loc] = vector_estado_parcial
-                    for al in self.alumnos:
-                        df_alumnos = al.agregarDF(df_alumnos, loc)
-                    for m in self.mantenimientos:
-                        df_manten = m.agregarDF(df_manten,loc)
+            elif isinstance(evento_actual, FinMantenimiento):  #Si el tipo de evento es un fin de mantenimiento
+                contadorNumeroFinMant += 1
+                llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento = self.manejarFinMantenimiento(evento_actual, contadorNumeroFinMant, vector_auxiliar)
+            
+            
+            vector_auxiliar = [llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento]
+            vector_estado = self.crearVectorEstado(evento_actual, llegada_alumno, fin_inscripcion, llegada_mantenimiento) #Vector de estado
+            if self.reloj >= self.mostrar_desde_minuto and cantidad_iteraciones_mostradas < self.mostrar_cantidad_iteraciones:
+                vector_estado_parcial = self.crearVectorEstadoParcial(evento_actual, llegada_alumno, fin_inscripcion, llegada_mantenimiento)
+                loc = len(df_datos_fijos)
+                df_datos_fijos.loc[loc] = vector_estado_parcial
+                for al in self.alumnos:
+                    df_alumnos = al.agregarDF(df_alumnos, loc)
+                for m in self.mantenimientos:
+                    df_manten = m.agregarDF(df_manten,loc)
 
-                    cantidad_iteraciones_mostradas += 1
-                print("\nIteracion: ", i)
-                print(vector_estado)
-                self.reloj = min(self.eventos).hora #Incrementar reloj
-                self.reloj = Truncate(self.reloj, 2)
+                cantidad_iteraciones_mostradas += 1
 
-                #print ("Listado de eventos: ")
-                #for j in self.eventos:
-                #    print("- ", j.nombre)
-                
-            else:
-                break        
-        print("\nacum alumnos que llegaron: ", self.acum_alumnos_llegaron)
-        print("acum alumnos que se retiran: ", self.acum_alumnos_retiran)
-        return df_datos_fijos.join(df_alumnos).join(df_manten)
+            self.reloj = min(self.eventos).hora #Incrementar reloj
+            self.reloj = Truncate(self.reloj, 2)     
+            
+        return df_datos_fijos.join(df_alumnos).join(df_manten), self.acum_alumnos_llegaron, self.acum_alumnos_retiran
 
 def main():
     controlador = Controlador(4000, 3000, 0, 10, 15, 5, 60, 3, 3, 0.16, 0, 200)
-    #1 x = Tiempo a simular
-    #2 n = Cantidad de iteraciones
-    #3 reloj
-    #4 a_insc
-    #5 b_insc 
-    #6 media_llegada_al
-    #7 media_llegada_mant 
-    #8 desv_llegada_mant 
-    #9 media_demora_mant 
-    #10 desv_demora_mant
-    #11 mostrar_desde_minuto
-    #12 mostrar_cantidad_iteraciones
-    GenerarExcel({"Simulacion": controlador.simular()}, "tp5.xlsx")
-    ''' 
-    FALTA
-    - Agregar RND en vector de estado
-    - Test cuando el alumno se retira, ¿Hay que crear el objeto alumno?
-    - Negativos en distribución normal de los mantenimientos
-    - Priorizar el mantenimiento en la búsqueda del evento actual
-    '''
 
 if __name__ == "__main__":
     main()
