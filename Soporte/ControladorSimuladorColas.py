@@ -31,11 +31,11 @@ class Controlador:
         self.array_fin_mantenimiento = [0, 0, 0, 0, 0]
         self.mostrar_desde_minuto = mostrar_desde
         self.mostrar_cantidad_iteraciones = mostrar_cantidad
-        self.maquina1 = Maquina(1, "LIBRE", 0, "NO MANTENIDA", None)
-        self.maquina2 = Maquina(2, "LIBRE", 0, "NO MANTENIDA", None)
-        self.maquina3 = Maquina(3, "LIBRE", 0, "NO MANTENIDA", None)
-        self.maquina4 = Maquina(4, "LIBRE", 0, "NO MANTENIDA", None)
-        self.maquina5 = Maquina(5, "LIBRE", 0, "NO MANTENIDA", None)
+        self.maquina1 = Maquina(1, "LIBRE", 0, "NO MANTENIDO", None)
+        self.maquina2 = Maquina(2, "LIBRE", 0, "NO MANTENIDO", None)
+        self.maquina3 = Maquina(3, "LIBRE", 0, "NO MANTENIDO", None)
+        self.maquina4 = Maquina(4, "LIBRE", 0, "NO MANTENIDO", None)
+        self.maquina5 = Maquina(5, "LIBRE", 0, "NO MANTENIDO", None)
 
     def buscarMaquinaLibre(self):
         '''
@@ -75,15 +75,15 @@ class Controlador:
 
     def buscarMaquinasNoMantenidas(self):
         maquinas_no_mantenidas = []
-        if self.maquina1.estado_mantenimiento == 'NO MANTENIDA':
+        if self.maquina1.estado_mantenimiento == 'NO MANTENIDO':
           maquinas_no_mantenidas.append(self.maquina1)
-        if self.maquina2.estado_mantenimiento == 'NO MANTENIDA':
+        if self.maquina2.estado_mantenimiento == 'NO MANTENIDO':
           maquinas_no_mantenidas.append(self.maquina2)
-        if self.maquina3.estado_mantenimiento == 'NO MANTENIDA':
+        if self.maquina3.estado_mantenimiento == 'NO MANTENIDO':
           maquinas_no_mantenidas.append(self.maquina3)
-        if self.maquina4.estado_mantenimiento == 'NO MANTENIDA':
+        if self.maquina4.estado_mantenimiento == 'NO MANTENIDO':
           maquinas_no_mantenidas.append(self.maquina4)
-        if self.maquina5.estado_mantenimiento == 'NO MANTENIDA':
+        if self.maquina5.estado_mantenimiento == 'NO MANTENIDO':
           maquinas_no_mantenidas.append(self.maquina5)
         return maquinas_no_mantenidas
     
@@ -129,7 +129,7 @@ class Controlador:
         llegada_alumno = LlegadaAlumno(self.reloj, self.media_llegada_al, contadorNumeroLlegada)
         self.eventos.append(llegada_alumno)
         llegada_mantenimiento = vector_auxiliar[1]
-        if len(self.cola) <= 4:
+        if len(self.cola) < 4:
             maquina = self.buscarMaquinaLibre()
             if maquina != None: 
                 fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, contadorNumeroLlegada-1)
@@ -459,11 +459,11 @@ class Controlador:
         while self.reloj <= self.x:
             i += 1
             if self.buscarMaquinasNoMantenidas() == []:
-                self.maquina1.estado_mantenimiento = "NO MANTENIDA"
-                self.maquina2.estado_mantenimiento = "NO MANTENIDA"
-                self.maquina3.estado_mantenimiento = "NO MANTENIDA"
-                self.maquina4.estado_mantenimiento = "NO MANTENIDA"
-                self.maquina5.estado_mantenimiento = "NO MANTENIDA"
+                self.maquina1.estado_mantenimiento = "NO MANTENIDO"
+                self.maquina2.estado_mantenimiento = "NO MANTENIDO"
+                self.maquina3.estado_mantenimiento = "NO MANTENIDO"
+                self.maquina4.estado_mantenimiento = "NO MANTENIDO"
+                self.maquina5.estado_mantenimiento = "NO MANTENIDO"
             evento_actual = min(self.eventos)
             self.eventos.remove(evento_actual) #Elimina el evento de la fila actual
             if isinstance(evento_actual, FinSimulacion):
