@@ -474,7 +474,7 @@ class Controlador:
             self.reloj = min(self.eventos).hora #Incrementar reloj
             self.reloj = Truncate(self.reloj, 2)     
             
-        return df_datos_fijos.join(df_alumnos).join(df_manten)
+        return df_datos_fijos.join(df_alumnos).join(df_manten), self.maquina1.acum_cant_inscripciones, self.maquina2.acum_cant_inscripciones, self.maquina3.acum_cant_inscripciones, self.maquina4.acum_cant_inscripciones, self.maquina5.acum_cant_inscripciones
 
 def main():
     controlador = Controlador(4000, 3000, 0, 10, 15, 5, 60, 3, 3, 0.16, 0, 200)

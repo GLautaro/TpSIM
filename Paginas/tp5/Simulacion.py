@@ -54,7 +54,24 @@ def LoadPage():
         #9 desv_demora_mant
         #10 mostrar_desde_minuto
         #11 mostrar_cantidad_iteraciones
-        df = controlador.simular()
+        df, cant_ins_m1, cant_ins_m2, cant_ins_m3, cant_ins_m4, cant_ins_m5 = controlador.simular()
         nombre = "tp5.xlsx"
         u.GenerarExcel({"Simulacion": df}, nombre)
         os.startfile(nombre)
+        st.title("Resultados")
+        st.header("Máquina 1")
+        st.write("Cantidad de inscripciones: ", cant_ins_m1)
+        st.write("Cantidad de inscripciones por hora: ", u.Truncate(cant_ins_m1/60, 2))
+        st.header("Máquina 2")
+        st.write("Cantidad de inscripciones: ", cant_ins_m2)
+        st.write("Cantidad de inscripciones por hora: ", u.Truncate(cant_ins_m2/60, 2))
+        st.header("Máquina 3")
+        st.write("Cantidad de inscripciones: ", cant_ins_m3)
+        st.write("Cantidad de inscripciones por hora: ", u.Truncate(cant_ins_m3/60, 2))
+        st.header("Máquina 4")
+        st.write("Cantidad de inscripciones: ", cant_ins_m4)
+        st.write("Cantidad de inscripciones por hora: ", u.Truncate(cant_ins_m4/60, 2))
+        st.header("Máquina 5")
+        st.write("Cantidad de inscripciones: ", cant_ins_m5)
+        st.write("Cantidad de inscripciones por hora: ", u.Truncate(cant_ins_m5/60, 2))
+
