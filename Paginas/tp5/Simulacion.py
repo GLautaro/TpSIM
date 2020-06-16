@@ -43,6 +43,7 @@ def LoadPage():
     simulacion_ok = st.button('Iniciar simulación')
     if simulacion_ok:
         controlador = csc.Controlador(tiempo, 0, a_uniforme_ins, b_uniforme_ins, exp_neg_media, a_uniforme_mant, b_uniforme_mant, media_demora, desviacion_est_demora, min_iteraciones, cant_iteraciones)
+        os.system("taskkill /F /IM excel.exe")
         #1 x = Tiempo a simular
         #2 reloj
         #3 a_insc
@@ -61,19 +62,19 @@ def LoadPage():
         st.title("Capacidad de inscripción")
         st.header("Máquina 1")
         st.write("Cantidad de inscripciones: ", cant_ins_m1)
-        st.write("Cantidad de inscripciones por hora: ", u.Truncate(cant_ins_m1/60, 2))
+        st.write("Cantidad de inscripciones por hora: ", u.Truncate(cant_ins_m1/(tiempo/60), 2))
         st.header("Máquina 2")
         st.write("Cantidad de inscripciones: ", cant_ins_m2)
-        st.write("Cantidad de inscripciones por hora: ", u.Truncate(cant_ins_m2/60, 2))
+        st.write("Cantidad de inscripciones por hora: ", u.Truncate(cant_ins_m2/(tiempo/60), 2))
         st.header("Máquina 3")
         st.write("Cantidad de inscripciones: ", cant_ins_m3)
-        st.write("Cantidad de inscripciones por hora: ", u.Truncate(cant_ins_m3/60, 2))
+        st.write("Cantidad de inscripciones por hora: ", u.Truncate(cant_ins_m3/(tiempo/60), 2))
         st.header("Máquina 4")
         st.write("Cantidad de inscripciones: ", cant_ins_m4)
-        st.write("Cantidad de inscripciones por hora: ", u.Truncate(cant_ins_m4/60, 2))
+        st.write("Cantidad de inscripciones por hora: ", u.Truncate(cant_ins_m4/(tiempo/60), 2))
         st.header("Máquina 5")
         st.write("Cantidad de inscripciones: ", cant_ins_m5)
-        st.write("Cantidad de inscripciones por hora: ", u.Truncate(cant_ins_m5/60, 2))
+        st.write("Cantidad de inscripciones por hora: ", u.Truncate(cant_ins_m5/(tiempo/60), 2))
         st.title("Porcentaje de alumnos que se retiraron: ")
         st.write("Cantidad de alumnos que llegaron: ", cant_al_llegaron)
         st.write("Cantidad de alumnos que se retiraron: ", cant_al_retiran)
