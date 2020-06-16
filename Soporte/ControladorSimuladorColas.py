@@ -186,7 +186,7 @@ class Controlador:
             if maquinas_no_mantenidas[i].estado == 'LIBRE':
                 maquina = maquinas_no_mantenidas[i]
                 break
-        if  maquina != None:       
+        if  maquina != None and self.buscarMantenimientosEnCola() is None:       
             fin_mantenimiento = self.realizarMantenimiento(mantenimiento, maquina, contadorNumeroLlegada)
         else:
             fin_mantenimiento = vector_auxiliar[3]
@@ -223,11 +223,11 @@ class Controlador:
             if cliente != None:           
                 self.colaMantenimientos.remove(cliente) #Elimina de la cola al cliente
                 fin_inscripcion = vector_auxiliar[2]
-                fin_mantenimiento = self.realizarMantenimiento(cliente, maquina, contadorNumeroFinMant)            
+                fin_mantenimiento = self.realizarMantenimiento(cliente, maquina, cliente.id)            
             else:
                 maquina.estado = "SIENDO UTILIZADO"
                 cliente = self.cola.pop(0) #Elimina de la cola al cliente
-                fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, contadorNumeroFinIns)
+                fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, cliente.id)
                 self.eventos.append(fin_inscripcion)
                 self.array_fin_inscripcion[maquina.id_maquina-1] = fin_inscripcion.hora
                 fin_mantenimiento = vector_auxiliar[3] #Busca el fin de mantenimiento de la fila anterior
@@ -270,11 +270,11 @@ class Controlador:
             if cliente != None:           
                 self.colaMantenimientos.remove(cliente) #Elimina de la cola al cliente
                 fin_inscripcion = vector_auxiliar[2]
-                fin_mantenimiento = self.realizarMantenimiento(cliente, maquina, contadorNumeroFinMant)            
+                fin_mantenimiento = self.realizarMantenimiento(cliente, maquina, cliente.id)            
             else:
                 maquina.estado = "SIENDO UTILIZADO"
                 cliente = self.cola.pop(0) #Elimina de la cola al cliente
-                fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, contadorNumeroFinIns)
+                fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, cliente.id)
                 self.eventos.append(fin_inscripcion)
                 self.array_fin_inscripcion[maquina.id_maquina-1] = fin_inscripcion.hora
                 fin_mantenimiento = vector_auxiliar[3] #Busca el fin de mantenimiento de la fila anterior
