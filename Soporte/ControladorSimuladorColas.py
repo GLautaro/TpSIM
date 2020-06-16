@@ -22,6 +22,8 @@ class Controlador:
         self.desv_demora_mant = desv_demora_mant
         self.cola = []
         self.colaMantenimientos = []
+        self.contador_alumnos_llegaron = 0
+        self.contador_alumnos_retiran = 0
         self.eventos = []
         self.alumnos = []
         self.mantenimientos = []
@@ -120,25 +122,31 @@ class Controlador:
             - Fin de mantenimiento: Busca el último evento fin de mantenimiento.
         3. Retorno: Todos los eventos actuales y el contador de alumnos.
         '''
+        self.contador_alumnos_llegaron+=1
         contadorAlumnos += 1 
         alumno = Alumno(None, "", contadorAlumnos)   
         self.alumnos.append(alumno)  
         llegada_alumno = LlegadaAlumno(self.reloj, self.media_llegada_al, contadorNumeroLlegada)
         self.eventos.append(llegada_alumno)
         llegada_mantenimiento = vector_auxiliar[1]
-        maquina = self.buscarMaquinaLibre()
-        if maquina != None: 
-            fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, contadorNumeroLlegada-1)
-            self.eventos.append(fin_inscripcion)
-            self.array_fin_inscripcion[maquina.id_maquina-1] = fin_inscripcion.hora
-            alumno.estado = "SIENDO INSCRIPTO"
-            alumno.maquina = maquina
-            maquina.cliente = alumno           
-            maquina.estado = "SIENDO UTILIZADO"
+        if len(self.cola) <= 4:
+            maquina = self.buscarMaquinaLibre()
+            if maquina != None: 
+                fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, contadorNumeroLlegada-1)
+                self.eventos.append(fin_inscripcion)
+                self.array_fin_inscripcion[maquina.id_maquina-1] = fin_inscripcion.hora
+                alumno.estado = "SIENDO INSCRIPTO"
+                alumno.maquina = maquina
+                maquina.cliente = alumno           
+                maquina.estado = "SIENDO UTILIZADO"
+            else:
+                fin_inscripcion = vector_auxiliar[2]     
+                self.cola.append(alumno) 
+                alumno.estado = "ESPERANDO INSCRIPCIÓN"
         else:
-            fin_inscripcion = vector_auxiliar[2]     
-            self.cola.append(alumno) 
-            alumno.estado = "ESPERANDO INSCRIPCIÓN"                   
+            self.contador_alumnos_retiran+=1
+            fin_inscripcion = vector_auxiliar[2]
+            alumno.estado = "RETIRADO"                   
         fin_mantenimiento = vector_auxiliar[3]       
         return llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento, contadorAlumnos
 
@@ -319,7 +327,9 @@ class Controlador:
                 "ACUM inscripciones Maquina 2: " + str(self.maquina2.acum_cant_inscripciones),
                 "ACUM inscripciones Maquina 3: " + str(self.maquina3.acum_cant_inscripciones),
                 "ACUM inscripciones Maquina 4: " + str(self.maquina4.acum_cant_inscripciones),
-                "ACUM inscripciones Maquina 5: " + str(self.maquina5.acum_cant_inscripciones)
+                "ACUM inscripciones Maquina 5: " + str(self.maquina5.acum_cant_inscripciones),
+                "Cantidad alumnos llegaron: " + str(self.contador_alumnos_llegaron),
+                "Cantidad alumnos retiran: " + str(self.contador_alumnos_retiran)
                 ]
 
         for a in self.alumnos:
@@ -382,7 +392,9 @@ class Controlador:
                 str(self.maquina2.acum_cant_inscripciones),
                 str(self.maquina3.acum_cant_inscripciones),
                 str(self.maquina4.acum_cant_inscripciones),
-                str(self.maquina5.acum_cant_inscripciones)
+                str(self.maquina5.acum_cant_inscripciones),
+                str(self.contador_alumnos_llegaron),
+                str(self.contador_alumnos_retiran)
                 ]
 
     def crearColumnasParcialesDataFrame(self):
@@ -423,7 +435,9 @@ class Controlador:
                  "Inscripciones Maquina 2",
                  "Inscripciones Maquina 3",
                  "Inscripciones Maquina 4",
-                 "Inscripciones Maquina 5"
+                 "Inscripciones Maquina 5",
+                 "Cantidad alumnos llegaron",
+                 "Cantidad alumnos retiran"
                  ]
 
     def simular(self):
@@ -500,7 +514,7 @@ class Controlador:
             df_alumnos = al.agregarDF(df_alumnos, loc)
         for m in self.mantenimientos:
             df_manten = m.agregarDF(df_manten, loc)
-        return df_datos_fijos.join(df_alumnos).join(df_manten), self.maquina1.acum_cant_inscripciones, self.maquina2.acum_cant_inscripciones, self.maquina3.acum_cant_inscripciones, self.maquina4.acum_cant_inscripciones, self.maquina5.acum_cant_inscripciones
+        return df_datos_fijos.join(df_alumnos).join(df_manten), self.maquina1.acum_cant_inscripciones, self.maquina2.acum_cant_inscripciones, self.maquina3.acum_cant_inscripciones, self.maquina4.acum_cant_inscripciones, self.maquina5.acum_cant_inscripciones, self.contador_alumnos_llegaron, self.contador_alumnos_retiran
 
 def main():
     controlador = Controlador(4000, 0, 0, 10, 15, 5, 60, 3, 3, 0.16, 0)

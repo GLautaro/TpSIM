@@ -54,11 +54,11 @@ def LoadPage():
         #9 desv_demora_mant
         #10 mostrar_desde_minuto
         #11 mostrar_cantidad_iteraciones
-        df, cant_ins_m1, cant_ins_m2, cant_ins_m3, cant_ins_m4, cant_ins_m5 = controlador.simular()
+        df, cant_ins_m1, cant_ins_m2, cant_ins_m3, cant_ins_m4, cant_ins_m5, cant_al_llegaron, cant_al_retiran = controlador.simular()
         nombre = "tp5.xlsx"
         u.GenerarExcel({"Simulacion": df}, nombre)
         os.startfile(nombre)
-        st.title("Resultados")
+        st.title("Capacidad de inscripción")
         st.header("Máquina 1")
         st.write("Cantidad de inscripciones: ", cant_ins_m1)
         st.write("Cantidad de inscripciones por hora: ", u.Truncate(cant_ins_m1/60, 2))
@@ -74,4 +74,8 @@ def LoadPage():
         st.header("Máquina 5")
         st.write("Cantidad de inscripciones: ", cant_ins_m5)
         st.write("Cantidad de inscripciones por hora: ", u.Truncate(cant_ins_m5/60, 2))
+        st.title("Porcentaje de alumnos que se retiraron: ")
+        st.write("Cantidad de alumnos que llegaron: ", cant_al_llegaron)
+        st.write("Cantidad de alumnos que se retiraron: ", cant_al_retiran)
+        st.write("Porcentaje: ", u.Truncate((cant_al_retiran/cant_al_llegaron)*100, 2))
 
