@@ -230,7 +230,6 @@ class Controlador:
                 fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, contadorNumeroFinIns)
                 self.eventos.append(fin_inscripcion)
                 self.array_fin_inscripcion[maquina.id_maquina-1] = fin_inscripcion.hora
-                maquina.acum_cant_inscripciones+= 1
                 fin_mantenimiento = vector_auxiliar[3] #Busca el fin de mantenimiento de la fila anterior
                 cliente.estado = "SIENDO INSCRIPTO"
                 maquina.cliente = cliente
@@ -278,7 +277,6 @@ class Controlador:
                 fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, contadorNumeroFinIns)
                 self.eventos.append(fin_inscripcion)
                 self.array_fin_inscripcion[maquina.id_maquina-1] = fin_inscripcion.hora
-                maquina.acum_cant_inscripciones+= 1
                 fin_mantenimiento = vector_auxiliar[3] #Busca el fin de mantenimiento de la fila anterior
                 cliente.estado = "SIENDO INSCRIPTO"
                 maquina.cliente = cliente
