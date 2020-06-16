@@ -1,8 +1,11 @@
+import os
+
 import pandas as pd
 from Entidades.Maquina import Maquina
 from Entidades.Cliente import Cliente, Alumno, Mantenimiento
 from Entidades.Evento import Evento, LlegadaAlumno, FinInscripcion, Inicializacion, LlegadaMantenimiento, \
     FinMantenimiento, FinSimulacion
+from Modulos import Utils
 from Modulos.Utils import Truncate,GenerarExcel
 
 class Controlador:
@@ -63,8 +66,8 @@ class Controlador:
                 return self.colaMantenimientos[i] #Falta retornar el objeto mantenimiento que ocurra primero
         return
 
-    def realizarMantenimiento(self, mantenimiento, maquina, contadorNumeroFin):
-        fin_mantenimiento = FinMantenimiento(maquina, self.reloj, self.media_demora_mant, self.desv_demora_mant, contadorNumeroFin - 1)
+    def realizarMantenimiento(self, mantenimiento, maquina):
+        fin_mantenimiento = FinMantenimiento(maquina, self.reloj, self.media_demora_mant, self.desv_demora_mant, mantenimiento.id)
         self.eventos.append(fin_mantenimiento)
         self.array_fin_mantenimiento[maquina.id_maquina-1] = fin_mantenimiento.hora           
         mantenimiento.estado = "REALIZANDO MANTENIMIENTO"
@@ -93,8 +96,8 @@ class Controlador:
         '''
         llegada_alumno = LlegadaAlumno(self.reloj, self.media_llegada_al, 1)
         llegada_mantenimiento = LlegadaMantenimiento(self.reloj, self.a_mant, self.b_mant, 1)
-        fin_inscripcion = FinInscripcion(None, 0, 0, 0, 0)
-        fin_mantenimiento = FinMantenimiento(None, 0, 0, 0, 0)
+        fin_inscripcion = FinInscripcion(None, 0, 0, 0, 1)
+        fin_mantenimiento = FinMantenimiento(None, 0, 0, 0, 1)
         self.eventos.append(llegada_alumno)
         self.eventos.append(llegada_mantenimiento)
         return llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento
@@ -123,16 +126,16 @@ class Controlador:
         3. Retorno: Todos los eventos actuales y el contador de alumnos.
         '''
         self.contador_alumnos_llegaron+=1
-        contadorAlumnos += 1 
-        alumno = Alumno(None, "", contadorAlumnos)   
+        contadorAlumnos += 1
+        alumno = Alumno(None, "", contadorAlumnos)
         self.alumnos.append(alumno)  
-        llegada_alumno = LlegadaAlumno(self.reloj, self.media_llegada_al, contadorNumeroLlegada)
+        llegada_alumno = LlegadaAlumno(self.reloj, self.media_llegada_al, alumno.id + 1)
         self.eventos.append(llegada_alumno)
         llegada_mantenimiento = vector_auxiliar[1]
         if len(self.cola) < 4:
             maquina = self.buscarMaquinaLibre()
             if maquina != None: 
-                fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, contadorNumeroLlegada-1)
+                fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, alumno.id)
                 self.eventos.append(fin_inscripcion)
                 self.array_fin_inscripcion[maquina.id_maquina-1] = fin_inscripcion.hora
                 alumno.estado = "SIENDO INSCRIPTO"
@@ -173,11 +176,11 @@ class Controlador:
                     - Modifica el estado del objeto mantenimiento.
         3. Retorno: Todos los eventos actuales y el contador de mantenimientos.
         '''
-        contadorMantenimientos += 1     
+        contadorMantenimientos += 1
         mantenimiento = Mantenimiento(None, "", contadorMantenimientos)
         self.mantenimientos.append(mantenimiento)
         llegada_alumno = vector_auxiliar[0]
-        llegada_mantenimiento = LlegadaMantenimiento(self.reloj, self.a_mant, self.b_mant, contadorNumeroLlegada)
+        llegada_mantenimiento = LlegadaMantenimiento(self.reloj, self.a_mant, self.b_mant, mantenimiento.id + 1)
         fin_inscripcion = vector_auxiliar[2] 
         self.eventos.append(llegada_mantenimiento)
         maquinas_no_mantenidas = self.buscarMaquinasNoMantenidas()
@@ -187,7 +190,7 @@ class Controlador:
                 maquina = maquinas_no_mantenidas[i]
                 break
         if  maquina != None and self.buscarMantenimientosEnCola() is None:       
-            fin_mantenimiento = self.realizarMantenimiento(mantenimiento, maquina, contadorNumeroLlegada)
+            fin_mantenimiento = self.realizarMantenimiento(mantenimiento, maquina)
         else:
             fin_mantenimiento = vector_auxiliar[3]
             self.colaMantenimientos.append(mantenimiento)
@@ -227,7 +230,7 @@ class Controlador:
             else:
                 maquina.estado = "SIENDO UTILIZADO"
                 cliente = self.cola.pop(0) #Elimina de la cola al cliente
-                fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, cliente.id)
+                fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, cliente.id - 1)
                 self.eventos.append(fin_inscripcion)
                 self.array_fin_inscripcion[maquina.id_maquina-1] = fin_inscripcion.hora
                 fin_mantenimiento = vector_auxiliar[3] #Busca el fin de mantenimiento de la fila anterior
@@ -270,11 +273,11 @@ class Controlador:
             if cliente != None:           
                 self.colaMantenimientos.remove(cliente) #Elimina de la cola al cliente
                 fin_inscripcion = vector_auxiliar[2]
-                fin_mantenimiento = self.realizarMantenimiento(cliente, maquina, cliente.id)            
+                fin_mantenimiento = self.realizarMantenimiento(cliente, maquina)
             else:
                 maquina.estado = "SIENDO UTILIZADO"
                 cliente = self.cola.pop(0) #Elimina de la cola al cliente
-                fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, cliente.id)
+                fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, cliente.id - 1)
                 self.eventos.append(fin_inscripcion)
                 self.array_fin_inscripcion[maquina.id_maquina-1] = fin_inscripcion.hora
                 fin_mantenimiento = vector_auxiliar[3] #Busca el fin de mantenimiento de la fila anterior
@@ -443,10 +446,11 @@ class Controlador:
         df_datos_fijos = pd.DataFrame(columns=columnas_fijas)
         df_alumnos = pd.DataFrame()
         df_manten = pd.DataFrame()
-        contadorNumeroLlegadaAl = 1
+        contadorNumeroLlegadaAl = 2
         contadorNumeroFinIns = 1
-        contadorNumeroLlegadaMant = 1
+        contadorNumeroLlegadaMant = 2
         contadorNumeroFinMant = 1
+
         contadorAlumnos = 0
         contadorMantenimientos = 0
         vector_auxiliar = [0, 0, 0, 0] #Se utiliza para poder obtener los eventos de la fila anterior
@@ -472,8 +476,8 @@ class Controlador:
                 llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento = self.manejarInicializacion()
 
             if isinstance(evento_actual, LlegadaAlumno): # Si el tipo de evento es una llegada de alumno
-                contadorNumeroLlegadaAl += 1
                 llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento, contadorAlumnos = self.manejarLlegadaAlumno(contadorNumeroLlegadaAl, contadorAlumnos, evento_actual, vector_auxiliar)
+                contadorNumeroLlegadaAl += 1
 
             elif isinstance(evento_actual, LlegadaMantenimiento): # Si el tipo de evento es una llegada de mantenimiento
                 contadorNumeroLlegadaMant += 1
@@ -515,8 +519,21 @@ class Controlador:
         return df_datos_fijos.join(df_alumnos).join(df_manten), self.maquina1.acum_cant_inscripciones, self.maquina2.acum_cant_inscripciones, self.maquina3.acum_cant_inscripciones, self.maquina4.acum_cant_inscripciones, self.maquina5.acum_cant_inscripciones, self.contador_alumnos_llegaron, self.contador_alumnos_retiran
 
 def main():
-    controlador = Controlador(4000, 0, 0, 10, 15, 5, 60, 3, 3, 0.16, 0)
-    controlador.simular()
+    controlador = Controlador(4000,         # 1 x = Tiempo a simular
+                              0,            # 2 reloj
+                              0,            # 3 a_insc
+                              10,           # 4 b_insc
+                              15,           # 5 media_llegada_al
+                              5,            # 6 a_mant
+                              10    ,           # 7 b_mant
+                              15,            # 8 media_demora_mant
+                              3,            # 9 desv_demora_mant
+                              0,            # 10 mostrar_desde_minuto
+                              4000          # 11 mostrar_cantidad_iteraciones
+                              )
+    os.system("taskkill /F /IM excel.exe")
+    Utils.GenerarExcel({"Simulacion":controlador.simular()[0]},"tp5.xlsx")
+    os.startfile("tp5.xlsx")
 '''
 sacar parametro contador alumno y mantenimiento en funciones
 '''
