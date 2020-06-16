@@ -1,7 +1,8 @@
 import pandas as pd
 from Entidades.Maquina import Maquina
 from Entidades.Cliente import Cliente, Alumno, Mantenimiento
-from Entidades.Evento import Evento, LlegadaAlumno, FinInscripcion, Inicializacion, LlegadaMantenimiento, FinMantenimiento
+from Entidades.Evento import Evento, LlegadaAlumno, FinInscripcion, Inicializacion, LlegadaMantenimiento, \
+    FinMantenimiento, FinSimulacion
 from Modulos.Utils import Truncate,GenerarExcel
 
 class Controlador:
@@ -61,7 +62,7 @@ class Controlador:
         return
 
     def realizarMantenimiento(self, mantenimiento, maquina, contadorNumeroFin):
-        fin_mantenimiento = FinMantenimiento(maquina, self.reloj, self.media_demora_mant, self.desv_demora_mant, contadorNumeroFin-1)
+        fin_mantenimiento = FinMantenimiento(maquina, self.reloj, self.media_demora_mant, self.desv_demora_mant, contadorNumeroFin - 1)
         self.eventos.append(fin_mantenimiento)
         self.array_fin_mantenimiento[maquina.id_maquina-1] = fin_mantenimiento.hora           
         mantenimiento.estado = "REALIZANDO MANTENIMIENTO"
@@ -424,15 +425,21 @@ class Controlador:
         df_datos_fijos = pd.DataFrame(columns=columnas_fijas)
         df_alumnos = pd.DataFrame()
         df_manten = pd.DataFrame()
-        contadorNumeroLlegadaAl = contadorNumeroFinIns = contadorNumeroLlegadaMant = contadorNumeroFinMant = 1
-        contadorAlumnos = contadorMantenimientos = 0
+        contadorNumeroLlegadaAl = 1
+        contadorNumeroFinIns = 1
+        contadorNumeroLlegadaMant = 1
+        contadorNumeroFinMant = 1
+        contadorAlumnos = 0
+        contadorMantenimientos = 0
         vector_auxiliar = [0, 0, 0, 0] #Se utiliza para poder obtener los eventos de la fila anterior
         inicializacion = Inicializacion()
+        fin_simulacion = FinSimulacion(self.x)
         self.eventos.append(inicializacion)
+        self.eventos.append(fin_simulacion)
         cantidad_iteraciones_mostradas = 0
         i = 0
         while self.reloj <= self.x:
-            i+=1
+            i += 1
             if self.buscarMaquinasNoMantenidas() == []:
                 self.maquina1.estado_mantenimiento = "NO MANTENIDA"
                 self.maquina2.estado_mantenimiento = "NO MANTENIDA"
@@ -441,6 +448,8 @@ class Controlador:
                 self.maquina5.estado_mantenimiento = "NO MANTENIDA"
             evento_actual = min(self.eventos)
             self.eventos.remove(evento_actual) #Elimina el evento de la fila actual
+            if isinstance(evento_actual, FinSimulacion):
+                break
             if isinstance(evento_actual, Inicializacion):
                 llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento = self.manejarInicializacion()
 
@@ -476,8 +485,15 @@ class Controlador:
                 cantidad_iteraciones_mostradas += 1
 
             self.reloj = min(self.eventos).hora #Incrementar reloj
-            self.reloj = Truncate(self.reloj, 2)     
-            
+            self.reloj = Truncate(self.reloj, 2)
+
+        vector_estado_parcial = self.crearVectorEstadoParcial(fin_simulacion, llegada_alumno, fin_inscripcion,llegada_mantenimiento)
+        loc = len(df_datos_fijos)
+        df_datos_fijos.loc[loc] = vector_estado_parcial
+        for al in self.alumnos:
+            df_alumnos = al.agregarDF(df_alumnos, loc)
+        for m in self.mantenimientos:
+            df_manten = m.agregarDF(df_manten, loc)
         return df_datos_fijos.join(df_alumnos).join(df_manten), self.maquina1.acum_cant_inscripciones, self.maquina2.acum_cant_inscripciones, self.maquina3.acum_cant_inscripciones, self.maquina4.acum_cant_inscripciones, self.maquina5.acum_cant_inscripciones
 
 def main():

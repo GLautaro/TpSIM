@@ -16,9 +16,13 @@ class Evento:
 class Inicializacion(Evento):
     def __init__(self):
         duracion = None
-        hora = None
+        hora = 0
         nombre = "Inicialización"
         super().__init__(duracion, hora, nombre)
+
+class FinSimulacion(Evento):
+    def __init__(self, horaFin):
+        super().__init__(None, horaFin, "Fin Simulacion")
 
 class LlegadaAlumno(Evento):
     def __init__(self, reloj, media_llegada_alumno, contador):
