@@ -70,30 +70,6 @@ class Controlador:
         maquina.cliente = mantenimiento           
         maquina.estado = "SIENDO MANTENIDO"
         return fin_mantenimiento
-    
-    def buscarSiguienteAtencion(self, maquina, contadorNumeroFin, vector_auxiliar):
-        '''
-        La función se ejecuta cuando ocurre un evento de Fin de Inscripción o de Fin de mantenimiento, en donde el servidor se desocupa y aún exiten clientes en cola.
-        Si existe algún cliente de mantenimiento en cola:
-            - 
-        '''
-        cliente = self.buscarMantenimientosEnCola()
-        if cliente != None:           
-            self.colaMantenimientos.remove(cliente) #Elimina de la cola al cliente
-            fin_inscripcion = vector_auxiliar[2]
-            fin_mantenimiento = self.realizarMantenimiento(cliente, maquina, contadorNumeroFin)            
-        else:
-            maquina.estado = "SIENDO UTILIZADO"
-            cliente = self.cola.pop(0) #Elimina de la cola al cliente
-            fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, contadorNumeroFin)
-            self.array_fin_inscripcion[maquina.id_maquina-1] = fin_inscripcion.hora
-            maquina.acum_cant_inscripciones+= 1
-            fin_mantenimiento = vector_auxiliar[3] #Busca el fin de mantenimiento de la fila anterior
-            cliente.estado = "SIENDO INSCRIPTO"
-            maquina.cliente = cliente
-            cliente.maquina = maquina
-        self.eventos.append(fin_inscripcion)
-        return fin_mantenimiento, fin_inscripcion
 
     def buscarMaquinasNoMantenidas(self):
         maquinas_no_mantenidas = []
@@ -210,7 +186,7 @@ class Controlador:
             mantenimiento.estado = "ESPERANDO MANTENIMIENTO"                 
         return llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento, contadorMantenimientos
 
-    def manejarFinInscripcion(self, evento_actual, contadorNumeroFin, vector_auxiliar):
+    def manejarFinInscripcion(self, evento_actual, contadorNumeroFinMant, contadorNumeroFinIns, vector_auxiliar):
         '''
         La función realiza las operaciones necesarias para el evento del tipo Fin Inscripción:
         1. Clientes:
@@ -235,7 +211,22 @@ class Controlador:
         llegada_alumno = vector_auxiliar[0]
         llegada_mantenimiento = vector_auxiliar[1]        
         if len(self.cola) >= 1:
-            fin_mantenimiento, fin_inscripcion = self.buscarSiguienteAtencion(maquina, contadorNumeroFin, vector_auxiliar)
+            cliente = self.buscarMantenimientosEnCola()
+            if cliente != None:           
+                self.colaMantenimientos.remove(cliente) #Elimina de la cola al cliente
+                fin_inscripcion = vector_auxiliar[2]
+                fin_mantenimiento = self.realizarMantenimiento(cliente, maquina, contadorNumeroFinMant)            
+            else:
+                maquina.estado = "SIENDO UTILIZADO"
+                cliente = self.cola.pop(0) #Elimina de la cola al cliente
+                fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, contadorNumeroFinIns)
+                self.eventos.append(fin_inscripcion)
+                self.array_fin_inscripcion[maquina.id_maquina-1] = fin_inscripcion.hora
+                maquina.acum_cant_inscripciones+= 1
+                fin_mantenimiento = vector_auxiliar[3] #Busca el fin de mantenimiento de la fila anterior
+                cliente.estado = "SIENDO INSCRIPTO"
+                maquina.cliente = cliente
+                cliente.maquina = maquina
         else:
             fin_inscripcion = vector_auxiliar[2]
             fin_mantenimiento = vector_auxiliar[3]
@@ -243,7 +234,7 @@ class Controlador:
             self.array_fin_inscripcion[maquina.id_maquina-1] = 0            
         return llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento
 
-    def manejarFinMantenimiento(self, evento_actual, contadorNumeroFin, vector_auxiliar):
+    def manejarFinMantenimiento(self, evento_actual, contadorNumeroFinMant, contadorNumeroFinIns, vector_auxiliar):
         '''
         La función realiza las operaciones necesarias para el evento del tipo Fin Mantenimiento:
          1. Clientes:
@@ -268,7 +259,22 @@ class Controlador:
         llegada_alumno = vector_auxiliar[0]
         llegada_mantenimiento = vector_auxiliar[1]    
         if len(self.cola) >= 1 or len(self.colaMantenimientos) >= 1:
-            fin_mantenimiento, fin_inscripcion = self.buscarSiguienteAtencion(maquina, contadorNumeroFin, vector_auxiliar)
+            cliente = self.buscarMantenimientosEnCola()
+            if cliente != None:           
+                self.colaMantenimientos.remove(cliente) #Elimina de la cola al cliente
+                fin_inscripcion = vector_auxiliar[2]
+                fin_mantenimiento = self.realizarMantenimiento(cliente, maquina, contadorNumeroFinMant)            
+            else:
+                maquina.estado = "SIENDO UTILIZADO"
+                cliente = self.cola.pop(0) #Elimina de la cola al cliente
+                fin_inscripcion = FinInscripcion(maquina, self.reloj, self.a_insc, self.b_insc, contadorNumeroFinIns)
+                self.eventos.append(fin_inscripcion)
+                self.array_fin_inscripcion[maquina.id_maquina-1] = fin_inscripcion.hora
+                maquina.acum_cant_inscripciones+= 1
+                fin_mantenimiento = vector_auxiliar[3] #Busca el fin de mantenimiento de la fila anterior
+                cliente.estado = "SIENDO INSCRIPTO"
+                maquina.cliente = cliente
+                cliente.maquina = maquina 
         else:
             fin_inscripcion = vector_auxiliar[2]
             fin_mantenimiento = vector_auxiliar[3]
@@ -463,11 +469,11 @@ class Controlador:
 
             elif isinstance(evento_actual, FinInscripcion):  #Si el tipo de evento es un fin de inscripción
                 contadorNumeroFinIns += 1
-                llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento = self.manejarFinInscripcion(evento_actual, contadorNumeroFinIns ,vector_auxiliar)
+                llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento = self.manejarFinInscripcion(evento_actual, contadorNumeroFinMant, contadorNumeroFinIns, vector_auxiliar)
 
             elif isinstance(evento_actual, FinMantenimiento):  #Si el tipo de evento es un fin de mantenimiento
                 contadorNumeroFinMant += 1
-                llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento = self.manejarFinMantenimiento(evento_actual, contadorNumeroFinMant, vector_auxiliar)
+                llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento = self.manejarFinMantenimiento(evento_actual, contadorNumeroFinMant, contadorNumeroFinIns,vector_auxiliar)
             
             
             vector_auxiliar = [llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento]
