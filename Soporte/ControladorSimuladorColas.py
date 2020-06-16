@@ -20,6 +20,7 @@ class Controlador:
         self.media_demora_mant = media_demora_mant
         self.desv_demora_mant = desv_demora_mant
         self.cola = []
+        self.colaMantenimientos = []
         self.eventos = []
         self.alumnos = []
         self.mantenimientos = []
@@ -54,9 +55,9 @@ class Controlador:
         '''
         La función recibe como parámetro un objeto máquina y retorna el mantenimiento que tiene como atributo ese objeto.
         '''
-        for i in range(len(self.cola)):
-            if isinstance(self.cola[i], Mantenimiento):
-                return self.cola[i] #Falta retornar el objeto mantenimiento que ocurra primero
+        for i in range(len(self.colaMantenimientos)):
+            if isinstance(self.colaMantenimientos[i], Mantenimiento):
+                return self.colaMantenimientos[i] #Falta retornar el objeto mantenimiento que ocurra primero
         return
 
     def realizarMantenimiento(self, mantenimiento, maquina, contadorNumeroFin):
@@ -77,7 +78,7 @@ class Controlador:
         '''
         cliente = self.buscarMantenimientosEnCola()
         if cliente != None:           
-            #self.cola.remove(cliente) #Elimina de la cola al cliente
+            self.colaMantenimientos.remove(cliente) #Elimina de la cola al cliente
             fin_inscripcion = vector_auxiliar[2]
             fin_mantenimiento = self.realizarMantenimiento(cliente, maquina, contadorNumeroFin)            
         else:
@@ -201,10 +202,10 @@ class Controlador:
                 maquina = maquinas_no_mantenidas[i]
                 break
         if  maquina != None:       
-            fin_mantenimiento = self.realizarMantenimiento(mantenimiento, maquinas_no_mantenidas[i], contadorNumeroLlegada)
+            fin_mantenimiento = self.realizarMantenimiento(mantenimiento, maquina, contadorNumeroLlegada)
         else:
             fin_mantenimiento = vector_auxiliar[3]
-            self.cola.append(mantenimiento) 
+            self.colaMantenimientos.append(mantenimiento)
             mantenimiento.estado = "ESPERANDO MANTENIMIENTO"                 
         return llegada_alumno, llegada_mantenimiento, fin_inscripcion, fin_mantenimiento, contadorMantenimientos
 
@@ -265,7 +266,7 @@ class Controlador:
         maquina.estado_mantenimiento = "MANTENIDO"
         llegada_alumno = vector_auxiliar[0]
         llegada_mantenimiento = vector_auxiliar[1]    
-        if len(self.cola) >= 1:
+        if len(self.cola) >= 1 or len(self.colaMantenimientos) >= 1:
             fin_mantenimiento, fin_inscripcion = self.buscarSiguienteAtencion(maquina, contadorNumeroFin, vector_auxiliar)
         else:
             fin_inscripcion = vector_auxiliar[2]
@@ -306,6 +307,7 @@ class Controlador:
                 "Maquina 5: " + str(self.maquina5.estado),
                 "Mantenimiento 5: " + str(self.maquina5.estado_mantenimiento),
                 "Cola: " + str(len(self.cola)),
+                "Cola Mantenimientos" + str(len(self.colaMantenimientos)),
                 "ACUM inscripciones Maquina 1: " + str(self.maquina1.acum_cant_inscripciones),
                 "ACUM inscripciones Maquina 2: " + str(self.maquina2.acum_cant_inscripciones),
                 "ACUM inscripciones Maquina 3: " + str(self.maquina3.acum_cant_inscripciones),
@@ -368,6 +370,7 @@ class Controlador:
                 str(self.maquina5.estado),
                 str(self.maquina5.estado_mantenimiento),
                 str(len(self.cola)),
+                str(len(self.colaMantenimientos)),
                 str(self.maquina1.acum_cant_inscripciones),
                 str(self.maquina2.acum_cant_inscripciones),
                 str(self.maquina3.acum_cant_inscripciones),
@@ -408,6 +411,7 @@ class Controlador:
                  "Máquina 5",
                  "Mantenimiento 5",
                  "Cola",
+                 "Cola Mantenimientos",
                  "Inscripciones Maquina 1",
                  "Inscripciones Maquina 2",
                  "Inscripciones Maquina 3",
@@ -477,8 +481,8 @@ class Controlador:
         return df_datos_fijos.join(df_alumnos).join(df_manten), self.maquina1.acum_cant_inscripciones, self.maquina2.acum_cant_inscripciones, self.maquina3.acum_cant_inscripciones, self.maquina4.acum_cant_inscripciones, self.maquina5.acum_cant_inscripciones
 
 def main():
-    controlador = Controlador(4000, 3000, 0, 10, 15, 5, 60, 3, 3, 0.16, 0, 200)
-
+    controlador = Controlador(4000, 0, 0, 10, 15, 5, 60, 3, 3, 0.16, 0)
+    controlador.simular()
 '''
 sacar parametro contador alumno y mantenimiento en funciones
 '''
