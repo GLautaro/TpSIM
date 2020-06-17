@@ -266,14 +266,24 @@ class Controlador:
         mantenimiento_finalizado.maquina = None
         mantenimiento_finalizado.estado = "FINALIZADO"
         maquina.estado_mantenimiento = "MANTENIDO"
+        maquina.estado = "LIBRE"
         llegada_alumno = vector_auxiliar[0]
         llegada_mantenimiento = vector_auxiliar[1]    
         if len(self.cola) >= 1 or len(self.colaMantenimientos) >= 1:
             cliente = self.buscarMantenimientosEnCola()
-            if cliente != None:           
-                self.colaMantenimientos.remove(cliente) #Elimina de la cola al cliente
+            if cliente != None:
                 fin_inscripcion = vector_auxiliar[2]
-                fin_mantenimiento = self.realizarMantenimiento(cliente, maquina)
+                maquina = None
+                maquinas = self.buscarMaquinasNoMantenidas()
+                for i in range(len(maquinas)):
+                    if maquinas[i].estado == 'LIBRE':
+                        maquina = maquinas[i]
+                        break
+                if maquina is None:
+                    fin_mantenimiento = vector_auxiliar[3]
+                    self.colaMantenimientos.append(cliente)
+                else:
+                    fin_mantenimiento = self.realizarMantenimiento(cliente, maquina)
             else:
                 maquina.estado = "SIENDO UTILIZADO"
                 cliente = self.cola.pop(0) #Elimina de la cola al cliente
@@ -522,11 +532,11 @@ def main():
     controlador = Controlador(4000,         # 1 x = Tiempo a simular
                               0,            # 2 reloj
                               0,            # 3 a_insc
-                              10,           # 4 b_insc
+                              5,           # 4 b_insc
                               15,           # 5 media_llegada_al
                               5,            # 6 a_mant
                               10    ,           # 7 b_mant
-                              15,            # 8 media_demora_mant
+                              5,            # 8 media_demora_mant
                               3,            # 9 desv_demora_mant
                               0,            # 10 mostrar_desde_minuto
                               4000          # 11 mostrar_cantidad_iteraciones
