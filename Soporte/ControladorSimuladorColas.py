@@ -226,7 +226,7 @@ class Controlador:
             if cliente != None:           
                 self.colaMantenimientos.remove(cliente) #Elimina de la cola al cliente
                 fin_inscripcion = vector_auxiliar[2]
-                fin_mantenimiento = self.realizarMantenimiento(cliente, maquina, cliente.id)            
+                fin_mantenimiento = self.realizarMantenimiento(cliente, maquina)            
             else:
                 maquina.estado = "SIENDO UTILIZADO"
                 cliente = self.cola.pop(0) #Elimina de la cola al cliente
