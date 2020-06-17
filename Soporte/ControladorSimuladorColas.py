@@ -221,7 +221,7 @@ class Controlador:
         alumno_finalizado.estado = "FINALIZADO"
         llegada_alumno = vector_auxiliar[0]
         llegada_mantenimiento = vector_auxiliar[1]        
-        if len(self.cola) >= 1:
+        if len(self.cola) >= 1 or len(self.colaMantenimientos) >=1:
             cliente = self.buscarMantenimientosEnCola()
             if cliente != None:           
                 self.colaMantenimientos.remove(cliente) #Elimina de la cola al cliente
@@ -332,7 +332,7 @@ class Controlador:
                 "Mantenimiento 4: " + str(self.maquina4.estado_mantenimiento),
                 "Maquina 5: " + str(self.maquina5.estado),
                 "Mantenimiento 5: " + str(self.maquina5.estado_mantenimiento),
-                "Cola: " + str(len(self.cola)),
+                "Cola alumnos: " + str(len(self.cola)),
                 "Cola Mantenimientos" + str(len(self.colaMantenimientos)),
                 "ACUM inscripciones Maquina 1: " + str(self.maquina1.acum_cant_inscripciones),
                 "ACUM inscripciones Maquina 2: " + str(self.maquina2.acum_cant_inscripciones),
