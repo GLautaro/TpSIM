@@ -61,9 +61,10 @@ class Controlador:
         '''
         La función recibe como parámetro un objeto máquina y retorna el mantenimiento que tiene como atributo ese objeto.
         '''
-        if len(self.colaMantenimientos) == 0:
-            return None
-        return min(self.colaMantenimientos, key=lambda x: x.id)
+        for i in range(len(self.colaMantenimientos)):
+            if isinstance(self.colaMantenimientos[i], Mantenimiento):
+                return self.colaMantenimientos[i] #Falta retornar el objeto mantenimiento que ocurra primero
+        return
 
     def realizarMantenimiento(self, mantenimiento, maquina):
         fin_mantenimiento = FinMantenimiento(maquina, self.reloj, self.media_demora_mant, self.desv_demora_mant, mantenimiento.id)
@@ -146,7 +147,7 @@ class Controlador:
                 self.cola.append(alumno) 
                 alumno.estado = "ESPERANDO INSCRIPCIÓN"
         else:
-            self.contador_alumnos_retiran += 1
+            self.contador_alumnos_retiran+=1
             fin_inscripcion = vector_auxiliar[2]
             alumno.estado = "RETIRADO"                   
         fin_mantenimiento = vector_auxiliar[3]       
@@ -177,21 +178,19 @@ class Controlador:
         '''
         contadorMantenimientos += 1
         mantenimiento = Mantenimiento(None, "", contadorMantenimientos)
+        self.mantenimientos.append(mantenimiento)
         llegada_alumno = vector_auxiliar[0]
         llegada_mantenimiento = LlegadaMantenimiento(self.reloj, self.a_mant, self.b_mant, mantenimiento.id + 1)
-        fin_inscripcion = vector_auxiliar[2]
-
+        fin_inscripcion = vector_auxiliar[2] 
         self.eventos.append(llegada_mantenimiento)
-        self.mantenimientos.append(mantenimiento)
-
+        maquinas_no_mantenidas = self.buscarMaquinasNoMantenidas()
         maquina = None
-        for m in self.buscarMaquinasNoMantenidas():
-            if m.estado == "LIBRE":
-                maquina = m
+        for i in range (len(maquinas_no_mantenidas)):
+            if maquinas_no_mantenidas[i].estado == 'LIBRE':
+                maquina = maquinas_no_mantenidas[i]
                 break
-        if maquina != None and self.buscarMantenimientosEnCola() is None:
+        if  maquina != None and self.buscarMantenimientosEnCola() is None:       
             fin_mantenimiento = self.realizarMantenimiento(mantenimiento, maquina)
-            self.eventos.append(fin_mantenimiento)
         else:
             fin_mantenimiento = vector_auxiliar[3]
             self.colaMantenimientos.append(mantenimiento)
@@ -218,27 +217,16 @@ class Controlador:
         maquina = evento_actual.maquina
         maquina.acum_cant_inscripciones += 1
         alumno_finalizado = maquina.cliente
-        maquina.cliente = None
         alumno_finalizado.maquina = None
         alumno_finalizado.estado = "FINALIZADO"
         llegada_alumno = vector_auxiliar[0]
         llegada_mantenimiento = vector_auxiliar[1]        
-        if len(self.cola) >= 1 or len(self.colaMantenimientos) >= 1:
+        if len(self.cola) >= 1 or len(self.colaMantenimientos) >=1:
             cliente = self.buscarMantenimientosEnCola()
-            if cliente != None:
+            if cliente != None:           
+                self.colaMantenimientos.remove(cliente) #Elimina de la cola al cliente
                 fin_inscripcion = vector_auxiliar[2]
-                maquina = None
-                maquinas = self.buscarMaquinasNoMantenidas()
-                for i in range(len(maquinas)):
-                    if maquinas[i].estado == 'LIBRE':
-                        maquina = maquinas[i]
-                        break
-                if maquina is None:
-                    fin_mantenimiento = vector_auxiliar[3]
-                    evento_actual.maquina.estado = "LIBRE"
-                else:
-                    self.colaMantenimientos.remove(cliente)
-                    fin_mantenimiento = self.realizarMantenimiento(cliente, maquina)
+                fin_mantenimiento = self.realizarMantenimiento(cliente, maquina)            
             else:
                 maquina.estado = "SIENDO UTILIZADO"
                 cliente = self.cola.pop(0) #Elimina de la cola al cliente
@@ -293,8 +281,8 @@ class Controlador:
                         break
                 if maquina is None:
                     fin_mantenimiento = vector_auxiliar[3]
+                    self.colaMantenimientos.append(cliente)
                 else:
-                    self.colaMantenimientos.remove(cliente)
                     fin_mantenimiento = self.realizarMantenimiento(cliente, maquina)
             else:
                 maquina.estado = "SIENDO UTILIZADO"
