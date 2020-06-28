@@ -35,4 +35,8 @@ class EstadoMaquinas(Enum):
     COMUN_SIENDO_MANTENIDA = "SIENDO MANTENIDA"
     MANTENIDA = "MANTENIDA"
     NO_MANTENIDA = "NO MANTENIDA"
+
+class TiposSimulacion(Enum):
+    TP5 = 0
+    TP6 = 1
     

@@ -26,6 +26,26 @@ def CalcularPinosTirada(prob, nro_aleatorio, primera_tirada = True):
 
     return indice + 7 if primera_tirada else indice
 
+def CalcularCantidadArchivos(prob, nro_aleatorio):
+    len_lista = len(prob)
+    nro_aleatorio = nro_aleatorio * 100
+    indice = 0
+    for i in range(len_lista - 1):
+        if i == len_lista - 2:
+            if prob[i] <= nro_aleatorio <= prob[i + 1]:
+                indice = i
+                break
+        if prob[i] <= nro_aleatorio < prob[i + 1]:
+            indice = i
+            break
+    if indice == 2:
+        return 2000
+    elif indice == 1:
+        return 1500
+    elif indice == 0:
+        return 1000
+    else:
+        raise Exception("El vector de probabilidades acumuladas no se corresponde con los parametros necesarios para la simulacion")
 """ 
 def CalcularPinosSegundaTirada(probabilidades,nro_aleatorio,pinos_primera):
     len_lista = len(probabilidades)

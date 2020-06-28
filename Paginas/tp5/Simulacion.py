@@ -1,5 +1,6 @@
 import streamlit as st
 import Soporte.ControladorSimuladorColas as csc
+from Modulos.Constantes import TiposSimulacion as TS
 import os
 import Modulos.Utils as u
 
@@ -42,7 +43,7 @@ def LoadPage():
 
     simulacion_ok = st.button('Iniciar simulación')
     if simulacion_ok:
-        controlador = csc.Controlador(tiempo, 0, a_uniforme_ins, b_uniforme_ins, exp_neg_media, a_uniforme_mant, b_uniforme_mant, media_demora, desviacion_est_demora, min_iteraciones, cant_iteraciones)
+        controlador = csc.Controlador(tiempo, 0, a_uniforme_ins, b_uniforme_ins, exp_neg_media, a_uniforme_mant, b_uniforme_mant, media_demora, desviacion_est_demora, min_iteraciones, cant_iteraciones, TS.TP5)
         os.system("taskkill /F /IM excel.exe")
         #1 x = Tiempo a simular
         #2 reloj
