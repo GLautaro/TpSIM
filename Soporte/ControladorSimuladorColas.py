@@ -586,7 +586,7 @@ class Controlador:
 
     def calcularTiempoSegunArchivos(self, cantArchivos):
         df = self.dict_integracion_numerica[cantArchivos]
-        df_aux = df.loc[df["a"] < 0]
+        df_aux = df.loc[df["A"] < 0]
         duracion = round(df_aux.iloc[0]["t"], 4)
         posicion = df_aux.index[0] + 2
         return duracion, posicion

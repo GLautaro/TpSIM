@@ -20,7 +20,7 @@ def euler(h, a0, t0):
 
 def calcularTiempo(h, a0, t0):
     df = euler(h, a0, t0)
-    df_aux = df.loc[df["a"] <= 0]
+    df_aux = df.loc[df["A"] <= 0]
     tiempo = round(df_aux.iloc[0]["t"])
     return df, tiempo
 
