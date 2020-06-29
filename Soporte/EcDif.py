@@ -15,7 +15,7 @@ def euler(h, a0, t0):
         t1 = t + h
         r.append([t, a, da, t1, a1])
 
-    df2 = pd.DataFrame(np.array(r), columns=['t', 'a', 'da/dt', 't+1', 'D+1'])
+    df2 = pd.DataFrame(np.array(r), columns=['t', 'A', 'dA/dt', 't(i+1)', 'A(i+1)'])
     return df2
 
 def calcularTiempo(h, a0, t0):
