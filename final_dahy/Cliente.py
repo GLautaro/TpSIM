@@ -23,22 +23,19 @@ class Cliente:
     def __eq__(self, other):
         if other is None:
             return False
-        if isinstance(other, Alumno):
-            def __eq__(self, cliente):
-                return self.id == cliente.id
+        if isinstance(other, Cliente):
+            return self.id == other.id
         return False
 
     def agregarDF(self, df, row):
         nombre_col_estado = "Estado" + str(self.id)
         nombre_col_cajero = "Cajero" + str(self.id)
-        return super().completarColumnas(df, nombre_col_estado, nombre_col_cajero, row)
+        return self.completarColumnas(df, nombre_col_estado, nombre_col_cajero, row)
 
     def completarColumnas(self, df, nombre_col_estado, nombre_col_maquina, row):
         if nombre_col_estado in df.columns:
-            df.at[row, nombre_col_estado] = self.estado.value
-            df.at[row, nombre_col_maquina] = str(self.maquina.id_maquina) if self.maquina is not None else "*---------*"
+            df.at[row, nombre_col_estado] = self.estado
         else:
             nones = [None for i in range(row)]
-            df[nombre_col_estado] = nones + [self.estado.value]
-            df[nombre_col_maquina] = nones + [str(self.maquina.id_maquina) if self.maquina is not None else "*---------*"]
+            df[nombre_col_estado] = nones + [self.estado]
         return df

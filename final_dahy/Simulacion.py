@@ -149,7 +149,7 @@ class Controlador:
             str(self.cajero3.acum_t_utilizacion),
             str(self.cajero4.acum_t_utilizacion),
         ]
-
+        return inicio_comunes + fin_comunes
     def crearColumnasParcialesDataFrame(self):
         '''
         Crea una lista con las columnas correspondientes a los datos siempre presentes en el dataframe
@@ -180,12 +180,12 @@ class Controlador:
             "ACUMTiempo utilización 3",
             "ACUM Tiempo utilización 4",
         ]
-
+        return inicio_comunes + fin_comunes
     def agregarDatos(self, df_datos_fijos, df_clientes, evento_actual):
         vector_estado_parcial = self.crearVectorEstadoParcial(evento_actual)
         loc = len(df_datos_fijos)
         df_datos_fijos.loc[loc] = vector_estado_parcial
-        for al in self.cldf_clientes:
+        for al in self.clientes:
             df_clientes = al.agregarDF(df_clientes, loc)
         return df_datos_fijos, df_clientes
     
@@ -221,9 +221,9 @@ class Controlador:
 
             vector_estado = self.crearVectorEstado(evento_actual)
             print(vector_estado)
-            if self.reloj >= self.mostrar_desde_minuto and cantidad_iteraciones_mostradas < self.mostrar_cantidad_iteraciones and cantidad_iteraciones_mostradas <= i:
-                df_datos_fijos, df_alumnos, df_manten = self.agregarDatos(df_datos_fijos, df_clientes, evento_actual)
-                cantidad_iteraciones_mostradas += 1
+            if self.reloj >= self.mostrar_desde_minuto and cant_iteraciones_mostradas < self.mostrar_cantidad_iteraciones and cant_iteraciones_mostradas <= i:
+                df_datos_fijos, df_alumnos = self.agregarDatos(df_datos_fijos, df_clientes, evento_actual)
+                cant_iteraciones_mostradas += 1
             self.reloj = min(self.eventos).hora
             self.reloj = Truncate(self.reloj, 2)
         
